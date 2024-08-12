@@ -18,4 +18,11 @@ final class ImagesListCell: UITableViewCell {
     
     static let reuseIdentifier = "ImagesListCell"
     
+    override func prepareForReuse() {
+// подготовка ячейки перед переиспользованием - удаляю все подслои, иначе фрейм градиента и, видимо, кнопки накладываются
+        if self.imageCellView.layer.sublayers?.count != nil  {
+            self.imageCellView.layer.sublayers?.removeAll()
+        }
+    }
+    
 }
