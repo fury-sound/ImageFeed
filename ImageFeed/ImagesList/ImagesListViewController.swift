@@ -10,10 +10,9 @@ import UIKit
 final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
-    var delegate = ImagesListCell()
+    var imageListCellVC = ImagesListCell()
     private let photosName : [String] = Array(0..<20).map{"\($0)"}
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 200
@@ -28,12 +27,13 @@ final class ImagesListViewController: UIViewController {
 extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        guard let imageListCell = cell as? ImagesListCell else {
+
+        guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             print("Failed cell typecast to ImagesListCell; table cells are empty")
             return UITableViewCell()
         }
-        delegate.configCell(in: tableView, for: imageListCell, with: indexPath)
+        
+        imageListCellVC.configCell(in: tableView, for: imageListCell, with: indexPath)
         return imageListCell
     }
     

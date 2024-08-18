@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B9145AD12C64149800975804 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9145AD02C64149800975804 /* ImagesListCell.swift */; };
+		B94136AF2C6E5A69008E3FE5 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94136AE2C6E5A69008E3FE5 /* ProfileViewController.swift */; };
 		B9E984AF2C6146CB0001C03A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E984AE2C6146CB0001C03A /* AppDelegate.swift */; };
 		B9E984B12C6146CB0001C03A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E984B02C6146CB0001C03A /* SceneDelegate.swift */; };
 		B9E984B32C6146CB0001C03A /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E984B22C6146CB0001C03A /* ImagesListViewController.swift */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		B9145AD02C64149800975804 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
+		B94136AE2C6E5A69008E3FE5 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		B9E984AB2C6146CB0001C03A /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E984AE2C6146CB0001C03A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B9E984B02C6146CB0001C03A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 				B9E984B72C6146CC0001C03A /* Assets.xcassets */,
 				B9E984B92C6146CC0001C03A /* LaunchScreen.storyboard */,
 				B9E984BC2C6146CC0001C03A /* Info.plist */,
+				B94136AE2C6E5A69008E3FE5 /* ProfileViewController.swift */,
 			);
 			path = ImageFeed;
 			sourceTree = "<group>";
@@ -151,6 +154,7 @@
 			files = (
 				B9E984B32C6146CB0001C03A /* ImagesListViewController.swift in Sources */,
 				B9145AD12C64149800975804 /* ImagesListCell.swift in Sources */,
+				B94136AF2C6E5A69008E3FE5 /* ProfileViewController.swift in Sources */,
 				B9E984AF2C6146CB0001C03A /* AppDelegate.swift in Sources */,
 				B9E984B12C6146CB0001C03A /* SceneDelegate.swift in Sources */,
 			);
