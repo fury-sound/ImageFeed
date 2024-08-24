@@ -29,7 +29,7 @@ final class ImagesListCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-// подготовка ячейки перед переиспользованием - удаляю все подслои, иначе фрейм градиента и, видимо, кнопки накладываются
+    // подготовка ячейки перед переиспользованием - удаляю все подслои, иначе фрейм градиента и, видимо, кнопки накладываются
         if self.imageCellView.layer.sublayers?.count != nil  {
             self.imageCellView.layer.sublayers?.removeAll()
         }
@@ -41,7 +41,7 @@ final class ImagesListCell: UITableViewCell {
         var actualImageHeight: CGFloat = 0.0
         cell.selectionStyle = .none
         
-        //        высота ячейки задается через tableView.rowHeight, а не через метод делегата heightForRowAt
+        // высота ячейки задается через tableView.rowHeight, а не через метод делегата heightForRowAt
         let rowNumber = indexPath.row
         let imageName = "\(rowNumber)"
         if let currentImage = UIImage(named: imageName) {

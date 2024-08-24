@@ -8,29 +8,14 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
-//    @IBOutlet weak var imageView: UIImageView!
-//    @IBOutlet weak var arrowButton: UIButton!
-//    @IBOutlet weak var labelName: UILabel!
-//    @IBOutlet weak var labelTG: UILabel!
-//    @IBOutlet weak var labelPhrase: UILabel!
-//    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        arrowButton.titleLabel?.text = ""
-//        imageSetup()
-//    }
-//    
-//    func imageSetup() {
-//        
-//    }
   
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
-        imageSetup()
+        profileSetup()
     }
     
-    private func imageSetup() {
+    private func profileSetup() {
         
         let profileImage = UIImage(named: "Ekat_nov")
         let imageView = UIImageView(image: profileImage)
