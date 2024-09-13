@@ -44,16 +44,12 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        print("didAuthenticateWithCode success")
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.main.async {
                 switch result {
                 case .success(let accessCode):
-//                    print("success", accessCode)
-                    print("Initial bearer token:", self.oauth2TokenStorage.token)
                     self.oauth2TokenStorage.token = accessCode
-                    print("Current bearer token:", self.oauth2TokenStorage.token)
                     self.delegate.didAuthenticate(self)
                 case .failure(let error):
                     print("Authentication error", error)
@@ -61,9 +57,4 @@ extension AuthViewController: WebViewViewControllerDelegate {
             }
         }
     }
-    
-//    func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-//        print("hiding webViewViewController")
-//        dismiss(animated: true)
-//    }
 }
