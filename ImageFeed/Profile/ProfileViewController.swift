@@ -8,6 +8,8 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
+    
+    var delegate = SplashViewController()
   
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +31,7 @@ final class ProfileViewController: UIViewController {
         let arrowButton = UIButton()
         let buttonImage = UIImage(named: "Exit")
         arrowButton.setImage(buttonImage, for: .normal)
+        arrowButton.addTarget(self, action: #selector(logoutAction), for: .touchUpInside) // logout action
         view.addSubview(arrowButton)
         arrowButton.translatesAutoresizingMaskIntoConstraints = false
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
@@ -64,6 +67,31 @@ final class ProfileViewController: UIViewController {
         labelPhrase.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         labelPhrase.topAnchor.constraint(equalTo: labelTG.bottomAnchor, constant: 8).isActive = true
         
+    }
+    
+    // temporary function to clean all UserDefaults values
+    private func cleanUserDefaults() {
+        let allValues = UserDefaults.standard.dictionaryRepresentation()
+        allValues.keys.forEach { key in
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+        let keyValue = "bearerToken"
+        print("value \(UserDefaults.standard.string(forKey: keyValue))")
+    }
+    
+    // logout button function
+    @objc private func logoutAction() {
+        UserDefaults.standard.setValue("", forKey: "bearerToken")
+//        cleanUserDefaults()
+        self.dismiss(animated: true)
+        guard let window = UIApplication.shared.windows.first else {
+            assertionFailure("Invalid windows configuration")
+            return
+        }
+        let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
+        splashViewController.modalTransitionStyle = .crossDissolve
+        splashViewController.modalPresentationStyle = .fullScreen
+        window.rootViewController = splashViewController
     }
     
 }

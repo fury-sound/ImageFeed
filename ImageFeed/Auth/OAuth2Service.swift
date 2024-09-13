@@ -51,26 +51,26 @@ final class OAuth2Service {
 //        print("final request: \(url)")
     }
     
-    private func fetch(request: URLRequest, handler: @escaping (Result<Data, Error>) -> Void) {
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
-            if let error = error {
-                handler(.failure(NetworkError.urlRequestError(error)))
-                return
-            }
-            if let response = response as? HTTPURLResponse,
-               response.statusCode < 200 || response.statusCode >= 300 {
-                handler(.failure(NetworkError.httpStatusCode(response.statusCode)))
-                print("status code error:", response.statusCode)
-            }
-            guard let data = data else {
-                handler(.failure(NetworkError.urlSessionError))
-                print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
-                return
-            }
-            handler(.success(data))
-        })
-        task.resume()
-    }
+//    private func fetch(request: URLRequest, handler: @escaping (Result<Data, Error>) -> Void) {
+//        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+//            if let error = error {
+//                handler(.failure(NetworkError.urlRequestError(error)))
+//                return
+//            }
+//            if let response = response as? HTTPURLResponse,
+//               response.statusCode < 200 || response.statusCode >= 300 {
+//                handler(.failure(NetworkError.httpStatusCode(response.statusCode)))
+//                print("status code error:", response.statusCode)
+//            }
+//            guard let data = data else {
+//                handler(.failure(NetworkError.urlSessionError))
+//                print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
+//                return
+//            }
+//            handler(.success(data))
+//        })
+//        task.resume()
+//    }
     
     
     func fetchOAuthToken(code: String, handler: @escaping (Swift.Result<String, Error>) -> Void) {
@@ -78,15 +78,15 @@ final class OAuth2Service {
         guard var request = finalRequest else { return }
         request.httpMethod = "POST"
         print("in fetchOAuthToken")
-        fetch(request: request, handler: { result in
+        networClient.fetch(request: request, handler: { result in
             switch result {
             case .success(let data):
-                print("success")
+                print("fetchOAuthToken success")
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                     handler(.success(response.access_token))
-//                    print("1", response)
+                    print("1", response)
                 } catch(let error) {
                     print("Decoder error:", error.localizedDescription)
                     handler(.failure(error))

@@ -28,6 +28,7 @@
 		B9E984B62C6146CB0001C03A /* Base in Resources */ = {isa = PBXBuildFile; fileRef = B9E984B52C6146CB0001C03A /* Base */; };
 		B9E984B82C6146CC0001C03A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9E984B72C6146CC0001C03A /* Assets.xcassets */; };
 		B9E984BB2C6146CC0001C03A /* Base in Resources */ = {isa = PBXBuildFile; fileRef = B9E984BA2C6146CC0001C03A /* Base */; };
+		B9FB41312C94830600A7F997 /* AuthViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FB41302C94830600A7F997 /* AuthViewControllerDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		B9E984B72C6146CC0001C03A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B9E984BA2C6146CC0001C03A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B9E984BC2C6146CC0001C03A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B9FB41302C94830600A7F997 /* AuthViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewControllerDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				B942FB392C88B8F60085ACC4 /* OAuth2TokenStorage.swift */,
 				B97D8F092C848C7500C60E81 /* WebViewViewControllerDelegate.swift */,
 				B91392C72C87DC1600FB99FB /* NetworkClient.swift */,
+				B9FB41302C94830600A7F997 /* AuthViewControllerDelegate.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 				B92A7E162C7215E700E4C8EA /* SingleImageViewController.swift in Sources */,
 				B92D672E2C827A56007C44E9 /* WebViewViewController.swift in Sources */,
 				B9E984B12C6146CB0001C03A /* SceneDelegate.swift in Sources */,
+				B9FB41312C94830600A7F997 /* AuthViewControllerDelegate.swift in Sources */,
 				B91392C82C87DC1600FB99FB /* NetworkClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

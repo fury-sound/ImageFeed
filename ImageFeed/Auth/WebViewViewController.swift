@@ -10,7 +10,6 @@ import WebKit
 
 enum WebViewConstants {
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-//    static let unsplashAuthorizeURLString = "https://3commas.io/login"
 }
 
 final class WebViewViewController: UIViewController {
@@ -22,11 +21,7 @@ final class WebViewViewController: UIViewController {
     @IBOutlet private weak var webView: WKWebView!
     
     @IBOutlet private weak var progressView: UIProgressView!
-    
-//    @IBAction func didTypeBackButton(_sender: Any) {
-//        print("print back button")
-//        delegate?.webViewViewControllerDidCancel(self)
-//    }
+
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,13 +93,11 @@ extension WebViewViewController: WKNavigationDelegate {
         print("in WebView")
         if let code = code(from: navigationAction) {
             //TODO: process code
-//            print("CANCEL")
+            print("CANCEL")
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
-//            delegateSplashVC?.showNextVC(for: "ViewingDataVC")
-            showTabBarVC()
         } else {
-//            print("ALLOW")
+            print("ALLOW")
             decisionHandler(.allow)
         }
     }

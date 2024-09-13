@@ -9,17 +9,19 @@ import UIKit
 
 final class OAuth2TokenStorage {
     private let storage: UserDefaults = .standard
-    
+    private enum Keys: String {
+        case bearerToken
+    }
 //"    init() {
 //        token = ""
 //    }"
     
     var token: String {
         get {
-            storage.string(forKey: "bearerToken") ?? ""
+            storage.string(forKey: Keys.bearerToken.rawValue) ?? ""
         }
         set {
-            storage.set(newValue, forKey: "bearerToken")
+            storage.set(newValue, forKey: Keys.bearerToken.rawValue)
         }
     }
 }

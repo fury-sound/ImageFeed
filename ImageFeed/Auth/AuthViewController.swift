@@ -8,10 +8,12 @@
 import UIKit
 
 final class AuthViewController: UIViewController {
+    
     private let ShowWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
     private var oauth2TokenStorage = OAuth2TokenStorage()
     let webViewViewController = WebViewViewController()
+    var delegate = SplashViewController()
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == ShowWebViewSegueIdentifier {
@@ -30,7 +32,7 @@ final class AuthViewController: UIViewController {
             oauth2TokenStorage.token = ""
         }
     }
-    
+        
     private func configureBackButton() {
         navigationController?.navigationBar.backIndicatorImage = UIImage(named: "nav_back_button")
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav_back_button")
@@ -43,8 +45,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         print("didAuthenticateWithCode success")
-        vc.dismiss(animated: true)
-//        oauth2Service.fetchOAuthToken(code: code)
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.main.async {
@@ -54,6 +54,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     print("Initial bearer token:", self.oauth2TokenStorage.token)
                     self.oauth2TokenStorage.token = accessCode
                     print("Current bearer token:", self.oauth2TokenStorage.token)
+                    self.delegate.didAuthenticate(self)
                 case .failure(let error):
                     print("Authentication error", error)
                 }
