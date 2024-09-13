@@ -43,8 +43,10 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         print("didAuthenticateWithCode success")
+        vc.dismiss(animated: true)
 //        oauth2Service.fetchOAuthToken(code: code)
-        oauth2Service.fetchOAuthToken(code: code) { result in
+        oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
+            guard let self = self else {return}
             DispatchQueue.main.async {
                 switch result {
                 case .success(let accessCode):

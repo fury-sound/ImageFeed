@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="MKd-RB-mHO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="C9R-hn-VN5">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -288,7 +288,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="kNm-vL-F7l">
             <objects>
-                <tabBarController id="rRE-Hd-DGS" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="ViewingDataVC" id="rRE-Hd-DGS" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7m0-f3-isF">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -348,8 +348,9 @@
         <!--Navigation Controller-->
         <scene sceneID="AWK-oX-YHj">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="MKd-RB-mHO" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="AuthorizeVC" automaticallyAdjustsScrollViewInsets="NO" id="MKd-RB-mHO" sceneMemberID="viewController">
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="yin-jc-qYE"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="fMB-Ho-4hf">
                         <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -363,20 +364,35 @@
             </objects>
             <point key="canvasLocation" x="-969" y="-628"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="6pz-CI-2Hd">
+        <!--Splash View Controller-->
+        <scene sceneID="Ry1-Ti-mjM">
             <objects>
-                <viewController id="Ve4-Yv-9hj" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Kce-9n-t2b">
+                <viewController id="C9R-hn-VN5" customClass="SplashViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="s72-i7-BRf">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="aXd-bK-Cw8"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imageFeedLogo" translatesAutoresizingMaskIntoConstraints="NO" id="Lfk-9n-Gc1">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="4hX-hk-AIY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Lfk-9n-Gc1" firstAttribute="top" secondItem="s72-i7-BRf" secondAttribute="top" id="6xX-2p-ryk"/>
+                            <constraint firstItem="Lfk-9n-Gc1" firstAttribute="leading" secondItem="s72-i7-BRf" secondAttribute="leading" id="ceH-5J-qp8"/>
+                            <constraint firstAttribute="bottom" secondItem="Lfk-9n-Gc1" secondAttribute="bottom" id="nip-RF-1gY"/>
+                            <constraint firstAttribute="trailing" secondItem="Lfk-9n-Gc1" secondAttribute="trailing" id="ucg-n1-yDy"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="imageView" destination="Lfk-9n-Gc1" id="elN-eW-B0v"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="WMe-2N-IxY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3hI-1p-xFB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-970" y="100"/>
+            <point key="canvasLocation" x="-1720" y="109"/>
         </scene>
     </scenes>
     <resources>
@@ -387,6 +403,7 @@
         <image name="Backward" width="24" height="24"/>
         <image name="Logo_of_Unsplash" width="60" height="60"/>
         <image name="Sharing" width="51" height="51"/>
+        <image name="imageFeedLogo" width="75" height="78"/>
         <namedColor name="ypBlack">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

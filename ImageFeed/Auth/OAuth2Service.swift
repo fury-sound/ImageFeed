@@ -96,19 +96,5 @@ final class OAuth2Service {
                 handler(.failure(error))
             }
         })
-        
-        //        let res: URLSessionTask = URLSession.shared.data(for: request, completion: { response in
-        //            print(response)
-        //        })
-        //        let result = URLSession.shared.dataTask(with: request)
-        //        print(result.description)
-        //        var result = networClient.fetch(request: request, handler: <#T##(Result<Data, any Error>) -> Void#>)
-        //        let result = URLSession.shared.data(for: request, completion: <#T##(Result<Data, any Error>) -> Void#>)
-        //        let task: URLSessionDataTask = URLSession.shared.dataTask(with: request)
-        //        { data, response, error in
-        //            if data { print("data is present")}
-        //            if response { print(response) }
-        //        }
-        //        task.resume()
     }
 }

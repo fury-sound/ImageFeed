@@ -16,6 +16,8 @@ enum WebViewConstants {
 final class WebViewViewController: UIViewController {
     
     weak var delegate: WebViewViewControllerDelegate?
+    
+    weak var delegateSplashVC: SplashViewController?
 
     @IBOutlet private weak var webView: WKWebView!
     
@@ -99,9 +101,21 @@ extension WebViewViewController: WKNavigationDelegate {
 //            print("CANCEL")
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
+//            delegateSplashVC?.showNextVC(for: "ViewingDataVC")
+            showTabBarVC()
         } else {
 //            print("ALLOW")
             decisionHandler(.allow)
+        }
+    }
+    
+    func showTabBarVC() {
+        print("in showTabBarVC")
+        let id = "ViewingDataVC"
+        if let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: id) as?  UITabBarController {
+            tabBarViewController.modalTransitionStyle = .crossDissolve
+            tabBarViewController.modalPresentationStyle = .fullScreen
+            present(tabBarViewController, animated: false, completion: nil)
         }
     }
     
