@@ -65,7 +65,6 @@ final class WebViewViewController: UIViewController {
     }
     
     private func loadAuthView() {
-        print("in loadAuthView")
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
             print("Error creating urlComponents from URLComponents")
             return
@@ -90,30 +89,15 @@ extension WebViewViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        print("in WebView")
         if let code = code(from: navigationAction) {
-            //TODO: process code
-            print("CANCEL")
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {
-            print("ALLOW")
             decisionHandler(.allow)
         }
     }
     
-    func showTabBarVC() {
-        print("in showTabBarVC")
-        let id = "ViewingDataVC"
-        if let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: id) as?  UITabBarController {
-            tabBarViewController.modalTransitionStyle = .crossDissolve
-            tabBarViewController.modalPresentationStyle = .fullScreen
-            present(tabBarViewController, animated: false, completion: nil)
-        }
-    }
-    
     private func code(from navigationAction: WKNavigationAction) -> String? {
-//        print("in code function")
         if
             let url = navigationAction.request.url,
             let urlComponents = URLComponents(string: url.absoluteString),
@@ -121,10 +105,9 @@ extension WebViewViewController: WKNavigationDelegate {
             let items = urlComponents.queryItems,
             let codeItem = items.first(where: {$0.name == "code"})
         {
-//            print("codeItem present \(codeItem.value)")
             return codeItem.value
         } else {
-            print("No code was received")
+//            debugPrint("No code was received")
             return nil
         }
     }

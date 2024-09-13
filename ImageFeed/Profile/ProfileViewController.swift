@@ -10,6 +10,7 @@ import UIKit
 final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
+    private var oauth2TokenStorage = OAuth2TokenStorage()
   
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,14 +76,14 @@ final class ProfileViewController: UIViewController {
         allValues.keys.forEach { key in
             UserDefaults.standard.removeObject(forKey: key)
         }
-        let keyValue = "bearerToken"
-        print("value \(UserDefaults.standard.string(forKey: keyValue))")
+//        let keyValue = "bearerToken"
+//        print("value \(UserDefaults.standard.string(forKey: keyValue))")
     }
     
     // logout button function
     @objc private func logoutAction() {
-        UserDefaults.standard.setValue("", forKey: "bearerToken")
-//        cleanUserDefaults()
+        oauth2TokenStorage.token = ""
+//        cleanUserDefaults() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")

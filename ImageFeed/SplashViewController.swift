@@ -12,49 +12,21 @@ final class SplashViewController: UIViewController {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let showAuthenticationScreenSegueIdentifier = "showAuthenticationScreenSegueIdentifier"
     private let showTabBarScreenSegueIdentifier = "showTabBarScreenSegueIdentifier"
-    //    var authViewController = AuthViewController()
-    
-    //    : UserDefaults = .standard
     
     @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         if oauth2TokenStorage.token == "" {
-            print("no token")
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         } else {
-            print("token present")
             switchToTabBarViewController()
-        }
-    }
-    
-    func showNextVC(for id: String) {
-        print("in showNextVC")
-        if id == "AuthorizeVC" {
-            //            if let naviViewController = storyboard?.instantiateViewController(withIdentifier: id) as? UINavigationController {
-            //                naviViewController.modalTransitionStyle = .crossDissolve
-            //                naviViewController.modalPresentationStyle = .fullScreen
-            //                present(naviViewController, animated: false, completion: nil)
-            //            }
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
-        } else {
-            print("2")
-            //            didAuthenticate(authViewController)
-            
-            //            if let tabBarViewController = storyboard?.instantiateViewController(withIdentifier: id) as?  UITabBarController {
-            //                tabBarViewController.modalTransitionStyle = .crossDissolve
-            //                tabBarViewController.modalPresentationStyle = .fullScreen
-            //                present(tabBarViewController, animated: false, completion: nil)
-            //            }
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.backgroundColor = .ypBlack
-        //        imageView.image = UIImage(named: "imageFeedLogo")
-        print("imageView loaded")
     }
     
 }
@@ -62,10 +34,8 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     
     func didAuthenticate(_ vc: AuthViewController) {
-        print("in didAuthenticate")
         vc.dismiss(animated: true)
         switchToTabBarViewController()
-        //        performSegue(withIdentifier: showTabBarScreenSegueIdentifier, sender: nil)
     }
     
     private func switchToTabBarViewController() {
@@ -79,11 +49,6 @@ extension SplashViewController: AuthViewControllerDelegate {
         window.rootViewController = tabBarController
     }
     
-//    func switchToNavigationViewController(_ vc: ProfileViewController) {
-////        vc.dismiss(animated: true)
-//        oauth2TokenStorage.token = ""
-//        performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
-//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showAuthenticationScreenSegueIdentifier {
@@ -95,6 +60,7 @@ extension SplashViewController: AuthViewControllerDelegate {
                 return
             }
             viewController.modalPresentationStyle = .fullScreen
+            viewController.modalTransitionStyle = .crossDissolve
             viewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
