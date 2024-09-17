@@ -6,14 +6,16 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class AuthViewController: UIViewController {
     
     private let ShowWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
     private var oauth2TokenStorage = OAuth2TokenStorage()
-    let webViewViewController = WebViewViewController()
-    var delegate = SplashViewController()
+    private let webViewViewController = WebViewViewController()
+//    var delegate = SplashViewController()
+    weak var delegate: AuthViewControllerDelegate?
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == ShowWebViewSegueIdentifier {
@@ -44,13 +46,16 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        vc.dismiss(animated: true)
+        ProgressHUD.animate()
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else {return}
+            ProgressHUD.dismiss()
             DispatchQueue.main.async {
                 switch result {
                 case .success(let accessCode):
                     self.oauth2TokenStorage.token = accessCode
-                    self.delegate.didAuthenticate(self)
+                    self.delegate?.didAuthenticate(self)
                 case .failure(let error):
                     print("Authentication error", error)
                 }

@@ -76,8 +76,9 @@ final class ProfileViewController: UIViewController {
         allValues.keys.forEach { key in
             UserDefaults.standard.removeObject(forKey: key)
         }
-//        let keyValue = "bearerToken"
-//        print("value \(UserDefaults.standard.string(forKey: keyValue))")
+        // checking if bearerToken was removed
+        // let keyValue = "bearerToken"
+        // print("value \(UserDefaults.standard.string(forKey: keyValue))")
     }
     
     // logout button function
