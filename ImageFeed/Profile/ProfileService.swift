@@ -77,6 +77,7 @@ final class ProfileService {
     }
     
     func fetchProfile(_ token: String, handler: @escaping (Result<Profile, Error>) -> Void) {
+        print("1 fetchProfile")
         assert(Thread.isMainThread)
         // избегаем гонку
         if task != nil {
@@ -93,18 +94,27 @@ final class ProfileService {
             guard let self = self else {return}
             switch result {
             case .success(let data):
-                print("in success do")
+                print("fetchProfile - in success do")
                 do {
+                    print("1 fetchProfile in do")
                     let response = try JSONDecoder().decode(ProfileResult.self, from: data)
                     let imageURL = response.profileImageURL?.smallImage
 //                    print(imageURL)
-                    guard var profile = self.profile else { return }
-                    profile = Profile(username: response.userName,
+//                    guard var profile = self.profile else {
+//                        print("no profile", profile)
+//                        return
+//                    }
+                    self.profile = Profile(username: response.userName,
                                       name: response.firstName + " " + response.lastName,
                                       loginName: "@" + response.userName,
                                       bio: response.bio,
                                       imageURL: imageURL)
-//                    print(profile)
+//                    print("2 fetchProfile", self.profile)
+                    guard let profile = self.profile else {
+                        print("fetchProfile - no profile", profile)
+                        return
+                    }
+                    print("2.fetchProfile profile", profile, type(of: profile))
                     handler(.success(profile))
                 } catch(let error) {
                     print("Decoder error:", error.localizedDescription)

@@ -20,6 +20,8 @@ final class ProfileViewController: UIViewController {
   
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("1 viewDidLoad")
+        print(profileService.profile, profileService.profileResult)
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
         profileSetup()
     }
@@ -73,7 +75,8 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8).isActive = true
         
-        updateProfileDetails()
+        guard let profile = profileService.profile else {return}
+        updateProfileDetails(profile: profile)
         
 //        guard let token = oauth2TokenStorage.token else { return }
 //        profileService.fetchProfile(token) { result in
@@ -94,14 +97,24 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    private func updateProfileDetails() {
-        nameLabel.text = profileService.profile?.name
-        loginNameLabel.text = profileService.profile?.loginName
-        if profileService.profile?.bio != nil {
-            descriptionLabel.text = profileService.profile?.bio
+    private func updateProfileDetails(profile: Profile) {
+        print("2 updateProfileDetails")
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        if profile.bio != nil {
+            descriptionLabel.text = profile.bio
         } else {
             descriptionLabel.text = "Hello, world!"
         }
+
+//        print(profileService.profile)
+//        nameLabel.text = profileService.profile?.name
+//        loginNameLabel.text = profileService.profile?.loginName
+//        if profileService.profile?.bio != nil {
+//            descriptionLabel.text = profileService.profile?.bio
+//        } else {
+//            descriptionLabel.text = "Hello, world!"
+//        }
     }
     
     // temporary function to clean all UserDefaults values
