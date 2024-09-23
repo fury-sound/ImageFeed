@@ -12,13 +12,10 @@ final class OAuth2TokenStorage {
     private enum Keys: String {
         case bearerToken
     }
-//"    init() {
-//        token = ""
-//    }"
     
-    var token: String {
+    var token: String? {
         get {
-            storage.string(forKey: Keys.bearerToken.rawValue) ?? ""
+            storage.string(forKey: Keys.bearerToken.rawValue) //?? ""
         }
         set {
             storage.set(newValue, forKey: Keys.bearerToken.rawValue)

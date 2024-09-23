@@ -12,12 +12,15 @@ final class SplashViewController: UIViewController {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let showAuthenticationScreenSegueIdentifier = "showAuthenticationScreenSegueIdentifier"
     private let showTabBarScreenSegueIdentifier = "showTabBarScreenSegueIdentifier"
+    private let profileService = ProfileService.shared
     
     @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        if oauth2TokenStorage.token == "" {
+        print("1. initial token:", oauth2TokenStorage.token)
+        //TODO: сделать token optional
+        if (oauth2TokenStorage.token == "") || (oauth2TokenStorage.token == nil) {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         } else {
             switchToTabBarViewController()
@@ -35,8 +38,28 @@ extension SplashViewController: AuthViewControllerDelegate {
     
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
-        switchToTabBarViewController()
+        guard let token = oauth2TokenStorage.token else { return }
+        fetchProfile(token)
+//        switchToTabBarViewController()
     }
+    
+    private func fetchProfile(_ token: String) {
+        UIBlockingProgressHUD.show()
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self = self else { return }
+            switch result {
+            case .success(let profile):
+                print("profile", profile)
+                profileService.profileUpdate(profileInt: profile)
+                self.switchToTabBarViewController()
+            case .failure(let error):
+                print("Error profile loading", error)
+                break
+            }
+        }
+    }
+    
     
     private func switchToTabBarViewController() {
         guard let window = UIApplication.shared.windows.first else {

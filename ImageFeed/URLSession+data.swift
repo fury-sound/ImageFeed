@@ -29,6 +29,7 @@ extension URLSession {
                let response = response,
                let statusCode = (response as? HTTPURLResponse)?.statusCode {
                 if 200..<300 ~= statusCode {
+//                    print("success with Network")
                     fulfilCompletionOnTheMainThread(.success(data))
                 } else {
                     fulfilCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))

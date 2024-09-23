@@ -30,8 +30,10 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
-        if oauth2TokenStorage.token.isEmpty {
-            oauth2TokenStorage.token = ""
+        guard var token = oauth2TokenStorage.token else { return }
+        print(token)
+        if token == nil {
+            token = ""
         }
     }
         
@@ -47,11 +49,14 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
+//        ProgressHUD.animate()
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else {return}
-            ProgressHUD.dismiss()
-            DispatchQueue.main.async {
+            UIBlockingProgressHUD.dismiss()
+//            ProgressHUD.dismiss()
+            print("Thread main:", Thread.isMainThread)
+//            DispatchQueue.main.async {
                 switch result {
                 case .success(let accessCode):
                     self.oauth2TokenStorage.token = accessCode
@@ -59,7 +64,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 case .failure(let error):
                     print("Authentication error", error)
                 }
-            }
+//            }
         }
     }
 }

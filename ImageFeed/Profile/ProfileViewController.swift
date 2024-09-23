@@ -11,6 +11,12 @@ final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
     private var oauth2TokenStorage = OAuth2TokenStorage()
+    private let profileService = ProfileService.shared
+    private var nameLabel = UILabel()
+    private var loginNameLabel = UILabel()
+    private var descriptionLabel = UILabel()
+    private var profileImage = UIImage(named: "Ekat_nov")
+
   
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,8 +25,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func profileSetup() {
-        
-        let profileImage = UIImage(named: "Ekat_nov")
+
         let imageView = UIImageView(image: profileImage)
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -38,36 +43,65 @@ final class ProfileViewController: UIViewController {
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         arrowButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
         
-        let labelName = UILabel()
-        labelName.text = "Екатерина Новикова"
-        labelName.font = UIFont(name: "SFPro-Bold", size: 23)
-        labelName.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+//        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = ""
+        nameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
+        nameLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         
-        view.addSubview(labelName)
-        labelName.translatesAutoresizingMaskIntoConstraints = false
-        labelName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelName.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
+        view.addSubview(nameLabel)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
         
-        let labelTG = UILabel()
-        labelTG.text = "@ekaterina_nov"
-        labelTG.font = UIFont(name: "SF Pro", size: 13)
-        labelTG.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
+//        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = ""
+        loginNameLabel.font = UIFont(name: "SF Pro", size: 13)
+        loginNameLabel.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
         
-        view.addSubview(labelTG)
-        labelTG.translatesAutoresizingMaskIntoConstraints = false
-        labelTG.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelTG.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 8).isActive = true
+        view.addSubview(loginNameLabel)
+        loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
 
-        let labelPhrase = UILabel()
-        labelPhrase.text = "Hello, world!"
-        labelPhrase.font = UIFont(name: "SF Pro", size: 13)
-        labelPhrase.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+//        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = ""
+        descriptionLabel.font = UIFont(name: "SF Pro", size: 13)
+        descriptionLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         
-        view.addSubview(labelPhrase)
-        labelPhrase.translatesAutoresizingMaskIntoConstraints = false
-        labelPhrase.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelPhrase.topAnchor.constraint(equalTo: labelTG.bottomAnchor, constant: 8).isActive = true
+        view.addSubview(descriptionLabel)
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8).isActive = true
         
+        updateProfileDetails()
+        
+//        guard let token = oauth2TokenStorage.token else { return }
+//        profileService.fetchProfile(token) { result in
+//            switch result {
+//            case .success(let profile):
+//                print("profile")
+//                self.nameLabel.text = profile.name
+//                self.loginNameLabel.text = profile.loginName
+//                if profile.bio != nil {
+//                    self.descriptionLabel.text = profile.bio
+//                } else {
+//                    self.descriptionLabel.text = "Hello, world!"
+//                }
+//            case .failure(let error):
+//                print("Profile fetch error", error)
+//            }
+//        }
+        
+    }
+    
+    private func updateProfileDetails() {
+        nameLabel.text = profileService.profile?.name
+        loginNameLabel.text = profileService.profile?.loginName
+        if profileService.profile?.bio != nil {
+            descriptionLabel.text = profileService.profile?.bio
+        } else {
+            descriptionLabel.text = "Hello, world!"
+        }
     }
     
     // temporary function to clean all UserDefaults values
@@ -77,13 +111,14 @@ final class ProfileViewController: UIViewController {
             UserDefaults.standard.removeObject(forKey: key)
         }
         // checking if bearerToken was removed
-        // let keyValue = "bearerToken"
-        // print("value \(UserDefaults.standard.string(forKey: keyValue))")
+         let keyValue = "bearerToken"
+         print("value \(UserDefaults.standard.string(forKey: keyValue))")
     }
     
     // logout button function
     @objc private func logoutAction() {
         oauth2TokenStorage.token = ""
+        print("Current token:", oauth2TokenStorage.token)
 //        cleanUserDefaults() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {

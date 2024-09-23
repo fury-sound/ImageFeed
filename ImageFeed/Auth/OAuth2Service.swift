@@ -18,7 +18,7 @@ enum AuthServiceError: Error {
 final class OAuth2Service {
     static let shared = OAuth2Service()
     private let urlSession = URLSession.shared
-    private var task: URLSessionDataTask?
+    private var task: URLSessionTask?
     private var lastCode: String?
     private init() {}
     //    private var finalRequest: URLRequest?
@@ -50,87 +50,56 @@ final class OAuth2Service {
     }
     
     
-    private func convertJSONdataToString(data: Data) -> String {
-        do {
-            let decoder = JSONDecoder()
-            let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-//            handler(.success(response.access_token))
-            return response.access_token
-        } catch(let error) {
-            print("Decoder error:", error.localizedDescription)
-            return "Decoder error:" + error.localizedDescription
-//            handler(.failure(error))
-            
-        }
-    }
-    
-    
-    
     func fetchOAuthToken(code: String, handler: @escaping (Swift.Result<String, Error>) -> Void) {
         //        createURLRequest(code)
         //        guard var request = finalRequest else { return }
         assert(Thread.isMainThread)
-        if task != nil {
-            if lastCode != code {
-                task?.cancel()
-            } else {
-                handler(.failure(AuthServiceError.invalidRequest))
-                return
-            }
-        } else {
-            if lastCode == code {
-                handler(.failure(AuthServiceError.invalidRequest))
-                return
-            }
+//        if task != nil {
+//            if lastCode != code {
+//                task?.cancel()
+//            } else {
+//                handler(.failure(AuthServiceError.invalidRequest))
+//                return
+//            }
+//        } else {
+//            if lastCode == code {
+//                handler(.failure(AuthServiceError.invalidRequest))
+//                return
+//            }
+//        }
+        
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
+            return
         }
+        task?.cancel()
         lastCode = code
-        guard var request = createURLRequest(code) else {
+        print("lastCode", lastCode)
+        guard let request = createURLRequest(code) else {
             handler(.failure(AuthServiceError.invalidRequest))
             return
         }
         
-        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    handler(.failure(NetworkError.urlRequestError(error)))
-                    print("Session error:, \(NetworkError.urlRequestError(error))")
-                    return
+        let task = urlSession.data(for: request) { result in
+            switch result {
+            case .success(let token):
+                do {
+                    let response = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: token)
+                    handler(.success(response.access_token))
+                } catch(let error) {
+                    print("Decoder error:", error.localizedDescription)
+                    handler(.failure(error))
                 }
-                if let response = response as? HTTPURLResponse,
-                   response.statusCode < 200 || response.statusCode >= 300 {
-                    handler(.failure(NetworkError.httpStatusCode(response.statusCode)))
-                    print("status code error:", response.statusCode)
-                    return
-                }
-                guard let data = data else {
-                    handler(.failure(NetworkError.urlSessionError))
-                    print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
-                    return
-                }
-                handler(.success(data))
-                self?.task = nil
-                self?.lastCode = nil
+            case .failure(let error):
+                print("fetch request error:", error.localizedDescription)
+                handler(.failure(error))
+                self.lastCode = nil
             }
+            self.task = nil
         }
+        
         self.task = task
         task.resume()
         
-        
-        //        networkClient.fetch(request: request, handler: { result in
-        //            switch result {
-        //            case .success(let data):
-        //                do {
-        //                    let decoder = JSONDecoder()
-        //                    let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-        //                    handler(.success(response.access_token))
-        //                } catch(let error) {
-        //                    print("Decoder error:", error.localizedDescription)
-        //                    handler(.failure(error))
-        //                }
-        //            case .failure(let error):
-        //                print("fetch request error:", error.localizedDescription)
-        //                handler(.failure(error))
-        //            }
-        //        })
     }
 }
