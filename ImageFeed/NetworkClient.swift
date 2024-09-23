@@ -34,6 +34,7 @@ struct NetworkClient {
             }
             handler(.success(data))
         }
+        
         task.resume()
     }
     

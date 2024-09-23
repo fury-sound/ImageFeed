@@ -32,11 +32,14 @@ extension URLSession {
                     fulfilCompletionOnTheMainThread(.success(data))
                 } else {
                     fulfilCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
+                    print("status code error:", NetworkError.httpStatusCode(statusCode))
                 }
             } else if let error = error {
                 fulfilCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
+                print("Session error:, \(NetworkError.urlRequestError(error))")
             } else {
                 fulfilCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
+                print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
             }
         })
         return task
