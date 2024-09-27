@@ -29,7 +29,7 @@ extension URLSession {
                let response = response,
                let statusCode = (response as? HTTPURLResponse)?.statusCode {
                 if 200..<300 ~= statusCode {
-//                    print("success with Network")
+                    //                    print("success with Network")
                     fulfilCompletionOnTheMainThread(.success(data))
                 } else {
                     fulfilCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
@@ -45,4 +45,33 @@ extension URLSession {
         })
         return task
     }
+        
+    func objectTask<T: Decodable>(
+        for request: URLRequest,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) -> URLSessionTask {
+        let decoder = JSONDecoder()
+        OAuth2Service.shared.counter += 1
+        print("1 objtask; counter \(OAuth2Service.shared.counter)")
+        let task = data(for: request) { (result: Result<Data, Error>) in
+            print("2 objtask")
+            switch result {
+            case .success(let info):
+                print("3 objtask")
+                do {
+                    let response = try decoder.decode(T.self, from: info)
+                    completion(.success(response))
+                } catch(let error) {
+                    print("Cannot decode JSON", error.localizedDescription)
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                print("4 objtask")
+                print("Cannot receive JSON", error.localizedDescription)
+                completion(.failure(error))
+            }
+        }
+        return task
+    }
+    
 }

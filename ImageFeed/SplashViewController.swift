@@ -21,10 +21,10 @@ final class SplashViewController: UIViewController {
         print("1. initial token:", oauth2TokenStorage.token)
         //TODO: сделать token optional
         if (oauth2TokenStorage.token == "") || (oauth2TokenStorage.token == nil) {
-            print("do segue in SplashVC")
+//            print("do segue in SplashVC")
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         } else {
-            print("swith to tabbar")
+//            print("swith to tabbar")
             guard let token = oauth2TokenStorage.token else { return }
             fetchProfileInSplashVC(token)
             switchToTabBarViewController()
@@ -41,7 +41,7 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     
     func didAuthenticate(_ vc: AuthViewController) {
-        print("didAuthenticate")
+//        print("didAuthenticate")
         vc.dismiss(animated: true)
         guard let token = oauth2TokenStorage.token else { return }
         fetchProfileInSplashVC(token)
@@ -52,8 +52,13 @@ extension SplashViewController: AuthViewControllerDelegate {
         UIBlockingProgressHUD.show()
         profileService.fetchProfile(token) { result in
             UIBlockingProgressHUD.dismiss()
-            print("2 fetchProfileInSplashVC token - ", token)
-            print("3 in fetchProfileInSplashVC", self.description)
+            print("token in  profileService.fetchProfile \(token)")
+//            guard let self else {
+//                print("error with self in fetchProfileInSplashVC")
+//                return
+//            }
+//            print("2 fetchProfileInSplashVC token - ", token)
+//            print("3 in fetchProfileInSplashVC", self.description)
 //            guard let self = self else {
 //                print("in fetchProfileInSplashVC - error in self")
 //                return
@@ -62,6 +67,19 @@ extension SplashViewController: AuthViewControllerDelegate {
             case .success:
                 print("2. in fetchProfileInSplashVC - profile")
 //                profileService.profileUpdate(profileInt: profile)
+
+//                guard let userName = self.profileService.profile?.username else {
+//                    print("no username in fetchProfileInSplashVC")
+//                    return
+//                }
+//                ProfileImageService.shared.fetchProfileImageURL(username: userName) { imageResult in
+//                    switch imageResult {
+//                    case .success(let avatarURLSent):
+//                        print("avatarURL", avatarURLSent)
+//                    case .failure(let error):
+//                        print("Can't download profile image", error.localizedDescription)
+//                    }
+//                }
                 self.switchToTabBarViewController()
             case .failure(let error):
                 print("Error profile loading", error.localizedDescription)
@@ -72,7 +90,7 @@ extension SplashViewController: AuthViewControllerDelegate {
     
     
     private func switchToTabBarViewController() {
-        print("in switchToTabBarViewController")
+//        print("in switchToTabBarViewController")
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
             return
