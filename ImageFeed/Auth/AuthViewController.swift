@@ -30,11 +30,11 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
-        guard var token = oauth2TokenStorage.token else { return }
-        print(token)
-        if token == nil {
-            token = ""
-        }
+//        guard var token = oauth2TokenStorage.token else { return }
+        print("oauth2TokenStorage.token in viewDidLoad -> AuthViewController:  \(String(describing: oauth2TokenStorage.token))")
+//        if oauth2TokenStorage.token == nil {
+//            oauth2TokenStorage.token = ""
+//        }
     }
         
     private func configureBackButton() {

@@ -96,11 +96,16 @@ final class ProfileService {
 //            }
             switch result {
             case .success(let profileRes):
+//                let imageAccessURL = profileRes.profileImageURL?.smallImage
+//                guard let imageTrueURL = imageAccessURL else {
+//                    print("cannot load imageURL")
+//                    return
+//                }
+//                print("imageTrueURL in fetchProfile -> ProfileService \(imageTrueURL)")
                 self.profile = Profile(username: profileRes.userName ?? "",
                                        name: (profileRes.firstName ?? "") + " " + (profileRes.lastName ?? ""),
                                        loginName: "@" + (profileRes.userName ?? ""),
-                                       bio: profileRes.bio,
-                                       imageURL: profileRes.profileImageURL?.smallImage)
+                                       bio: profileRes.bio ?? "") //, imageURL: imageTrueURL)
                 guard let profile = self.profile else { return }
                 handler(.success(profile))
             case .failure(let error):

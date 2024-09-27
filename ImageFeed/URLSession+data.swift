@@ -19,7 +19,7 @@ extension URLSession {
         for request: URLRequest,
         completion: @escaping (Result<Data, Error>) -> Void
     ) -> URLSessionTask {
-        let fulfilCompletionOnTheMainThread: (Result<Data, Error>) -> Void = { result in
+        let fullCompletionOnTheMainThread: (Result<Data, Error>) -> Void = { result in
             DispatchQueue.main.async {
                 completion(result)
             }
@@ -30,17 +30,17 @@ extension URLSession {
                let statusCode = (response as? HTTPURLResponse)?.statusCode {
                 if 200..<300 ~= statusCode {
                     //                    print("success with Network")
-                    fulfilCompletionOnTheMainThread(.success(data))
+                    fullCompletionOnTheMainThread(.success(data))
                 } else {
-                    fulfilCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
+                    fullCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                     print("status code error:", NetworkError.httpStatusCode(statusCode))
                 }
             } else if let error = error {
-                fulfilCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
+                fullCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
                 print("Session error:, \(NetworkError.urlRequestError(error))")
             } else {
-                fulfilCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
-                print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
+                fullCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
+                print("Generated data: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
             }
         })
         return task

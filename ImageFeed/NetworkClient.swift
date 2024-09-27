@@ -29,7 +29,7 @@ struct NetworkClient {
             }
             guard let data = data else {
                 handler(.failure(NetworkError.urlSessionError))
-                print("Generated data:", String(data: data ?? Data(), encoding: .utf8))
+                print("Generated data: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
                 return
             }
             handler(.success(data))

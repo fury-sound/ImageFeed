@@ -143,13 +143,13 @@ final class ProfileViewController: UIViewController {
         }
         // checking if bearerToken was removed
         let keyValue = "bearerToken"
-        print("value \(UserDefaults.standard.string(forKey: keyValue))")
+        print("value \(String(describing: UserDefaults.standard.string(forKey: keyValue)))")
     }
     
     // logout button function
     @objc private func logoutAction() {
         oauth2TokenStorage.token = ""
-        print("Current token:", oauth2TokenStorage.token)
+        print("Current token: \(String(describing: oauth2TokenStorage.token))")
         //        cleanUserDefaults() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {

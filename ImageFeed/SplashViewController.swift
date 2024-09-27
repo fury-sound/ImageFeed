@@ -18,7 +18,7 @@ final class SplashViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        print("1. initial token:", oauth2TokenStorage.token)
+        print("1. initial token: \(String(describing: oauth2TokenStorage.token))")
         //TODO: сделать token optional
         if (oauth2TokenStorage.token == "") || (oauth2TokenStorage.token == nil) {
 //            print("do segue in SplashVC")
