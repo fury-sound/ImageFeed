@@ -6,16 +6,22 @@
 //
 
 import UIKit
+import Kingfisher
+import SwiftKeychainWrapper
 
 final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
-    private var oauth2TokenStorage = OAuth2TokenStorage()
+    //    private var oauth2TokenStorage = OAuth2TokenStorage()
+    private let keyChainStorage = KeyChainStorage()
     private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    
     private var nameLabel = UILabel()
     private var loginNameLabel = UILabel()
     private var descriptionLabel = UILabel()
     private var profileImage = UIImage(named: "Ekat_nov")
+    private var imageView = UIImageView()
     private var profileImageServiceObserver: NSObjectProtocol?
     
     
@@ -29,24 +35,34 @@ final class ProfileViewController: UIViewController {
             guard let self = self else { return }
             self.updateAvatar()
         }
-        updateAvatar()
-        print("1 ProfileViewController ProfileViewControllerviewDidLoad")
+        //        updateAvatar()
+        //        print("1 ProfileViewController ProfileViewControllerviewDidLoad")
         //        print(profileService.profile, profileService.profileResult)
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
         profileSetup()
     }
     
     private func updateAvatar() {
+        //        print("in updateAvatar \(String(describing: profileImageService.avatarURL))")
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let profileImageURL = profileImageService.avatarURL,
             let url = URL(string: profileImageURL)
-        else { return }
+        else {
+            print("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
+            return
+        }
         //TODO Обновить аватар с помощью Kingfisher
+        //        print("avatarURL in ProfileViewController \(profileImageURL)")
+        let processor = RoundCornerImageProcessor(cornerRadius: 20)
+        imageView.kf.setImage(with: url,
+                              options: [
+                                .processor(processor)
+                              ])
     }
     
     private func profileSetup() {
         
-        let imageView = UIImageView(image: profileImage)
+        //        imageView = UIImageView(image: profileImage)
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
@@ -116,7 +132,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateProfileDetails(profile: Profile) {
-        print("2 ProfileViewController updateProfileDetails")
+        //        print("2 ProfileViewController updateProfileDetails")
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         if profile.bio != nil {
@@ -124,6 +140,7 @@ final class ProfileViewController: UIViewController {
         } else {
             descriptionLabel.text = "Hello, world!"
         }
+        updateAvatar()
         
         //        print(profileService.profile)
         //        nameLabel.text = profileService.profile?.name
@@ -136,21 +153,27 @@ final class ProfileViewController: UIViewController {
     }
     
     // temporary function to clean all UserDefaults values
-    private func cleanUserDefaults() {
-        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        allValues.keys.forEach { key in
-            UserDefaults.standard.removeObject(forKey: key)
-        }
+    private func checkIfTokenIsRemoved() {
+//        let allValues = UserDefaults.standard.dictionaryRepresentation()
+//        allValues.keys.forEach { key in
+//            UserDefaults.standard.removeObject(forKey: key)
+//        }
         // checking if bearerToken was removed
         let keyValue = "bearerToken"
-        print("value \(String(describing: UserDefaults.standard.string(forKey: keyValue)))")
+        let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
+        guard let isSuccess else {
+            print("token value is nil")
+            return
+        }
+        print("isSuccess in ProfileViewController \(isSuccess)")
     }
     
     // logout button function
     @objc private func logoutAction() {
-        oauth2TokenStorage.token = ""
-        print("Current token: \(String(describing: oauth2TokenStorage.token))")
-        //        cleanUserDefaults() // calling temporary function
+        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
+        //        keyChainStorage.token = nil
+        print("Current token: \(String(describing: keyChainStorage.token))")
+//        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")

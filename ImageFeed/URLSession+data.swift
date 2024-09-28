@@ -21,6 +21,7 @@ extension URLSession {
     ) -> URLSessionTask {
         let fullCompletionOnTheMainThread: (Result<Data, Error>) -> Void = { result in
             DispatchQueue.main.async {
+//                print("URLSession+ data: ProfileImageService.shared.avatarURL \(ProfileImageService.shared.avatarURL)")
                 completion(result)
             }
         }
@@ -33,14 +34,14 @@ extension URLSession {
                     fullCompletionOnTheMainThread(.success(data))
                 } else {
                     fullCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
-                    print("status code error:", NetworkError.httpStatusCode(statusCode))
+                    print("URLSession-data(): status code error:", NetworkError.httpStatusCode(statusCode))
                 }
             } else if let error = error {
                 fullCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
-                print("Session error:, \(NetworkError.urlRequestError(error))")
+                print("URLSession-data(): Session error:, \(NetworkError.urlRequestError(error))")
             } else {
                 fullCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
-                print("Generated data: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
+                print("URLSession-data(): Generated data: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
             }
         })
         return task
@@ -51,23 +52,23 @@ extension URLSession {
         completion: @escaping (Result<T, Error>) -> Void
     ) -> URLSessionTask {
         let decoder = JSONDecoder()
-        OAuth2Service.shared.counter += 1
-        print("1 objtask; counter \(OAuth2Service.shared.counter)")
+//        OAuth2Service.shared.counter += 1
+//        print("1 objtask; counter \(OAuth2Service.shared.counter)")
         let task = data(for: request) { (result: Result<Data, Error>) in
-            print("2 objtask")
+//            print("2 objtask")
             switch result {
             case .success(let info):
-                print("3 objtask")
+//                print("3 objtask")
                 do {
                     let response = try decoder.decode(T.self, from: info)
                     completion(.success(response))
                 } catch(let error) {
-                    print("Cannot decode JSON", error.localizedDescription)
+                    print("URLSession-objectTask: Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):
-                print("4 objtask")
-                print("Cannot receive JSON", error.localizedDescription)
+//                print("4 objtask")
+                print("URLSession-objectTask(): Cannot receive JSON", error.localizedDescription)
                 completion(.failure(error))
             }
         }

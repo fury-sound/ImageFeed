@@ -21,7 +21,9 @@ final class OAuth2Service {
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
-    private let oauth2Storage = OAuth2TokenStorage()
+//    private let oauth2Storage = OAuth2TokenStorage()
+    private let keyChainStorage = KeyChainStorage()
+
     private init() {}
     //    private var finalRequest: URLRequest?
     //    var networkClient = NetworkClient()
@@ -60,27 +62,27 @@ final class OAuth2Service {
 //            print("lastCode error")
 //            return
 //        }
-        if task != nil {
-            if lastCode != code {
-                task?.cancel()
-            } else {
-                handler(.failure(AuthServiceError.invalidRequest))
-                return
-            }
-        } else {
-            if lastCode == code {
-                handler(.failure(AuthServiceError.invalidRequest))
-                return
-            }
-        }
-        
-//        guard lastCode != code else {
-//            handler(.failure(AuthServiceError.invalidRequest))
-//            return
+//        if task != nil {
+//            if lastCode != code {
+//                task?.cancel()
+//            } else {
+//                handler(.failure(AuthServiceError.invalidRequest))
+//                return
+//            }
+//        } else {
+//            if lastCode == code {
+//                handler(.failure(AuthServiceError.invalidRequest))
+//                return
+//            }
 //        }
-//        task?.cancel()
+        
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        task?.cancel()
         self.lastCode = code
-        print("lastCode in fetchOAuthToken -> OAuth2Service, \(String(describing: self.lastCode)), \(String(describing: lastCode)); code: \(code)")
+//        print("lastCode in fetchOAuthToken -> OAuth2Service, \(String(describing: self.lastCode)), \(String(describing: lastCode)); code: \(code)")
         guard let request = createURLRequest(code) else {
             handler(.failure(AuthServiceError.invalidRequest))
             return
@@ -91,12 +93,13 @@ final class OAuth2Service {
             switch result {
             case .success(let info):
                 guard let token = info.access_token else { return }
-                oauth2Storage.token = token
-                print("token in new task: \(token), \(String(describing: oauth2Storage.token))")
+                keyChainStorage.token = token
+//                print("token in new task: \(token), \(String(describing: keyChainStorage.token))")
                 handler(.success(token))
             case .failure(let error):
                 print("Cannot receive token in fetchOAuthToken, OAuth2Service")
                 handler(.failure(error))
+                self.lastCode = nil
             }
             self.lastCode = nil
             self.task = nil

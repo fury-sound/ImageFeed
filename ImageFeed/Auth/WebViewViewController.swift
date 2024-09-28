@@ -105,25 +105,68 @@ extension WebViewViewController: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
+//        let codeFromNavi = code(from: navigationAction)
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
+//            print("in cancel - webView -> WebViewViewController")
             decisionHandler(.cancel)
         } else {
+//            print("in allow - webView -> WebViewViewController")
             decisionHandler(.allow)
         }
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
+//        let codeItem: [URLQueryItem]?
+//        let urlCheck = navigationAction.request.url!
+//        let urlComponentsCheck = URLComponents(string: urlCheck.absoluteString)!
+//        let pathString = urlComponentsCheck.path
+//        print("url params: \(urlCheck),\n \(urlComponentsCheck),\n \(pathString)")
         if let url = navigationAction.request.url,
            let urlComponents = URLComponents(string: url.absoluteString),
            urlComponents.path == "/oauth/authorize/native",
            let items = urlComponents.queryItems,
            let codeItem = items.first(where: { $0.name == "code" })
         {
+//            print("codeItem.value \(codeItem.value!)")
             return codeItem.value
         } else {
-            //            debugPrint("No code was received")
+//            let codeItem1 = urlComponentsCheck.queryItems?.first(where: { $0.name == "code" })
+//            print("codeItem.value \(codeItem1)")
+            debugPrint("No code was received")
+//            authErrorAlert()
             return nil
         }
     }
+    
+    private func authErrorAlert() {
+        
+        let alertText = "OK"
+        let alertTitle = "Что-то пошло не так ((("
+        let alertMessage = "Не удалось войти в систему"
+        
+        let action = UIAlertAction(title: alertText, style: .default) { _ in
+//            print("Current token: \(String(describing: oauth2TokenStorage.token))")
+            //        cleanUserDefaults() // calling temporary function
+//            self.dismiss(animated: true)
+            guard let window = UIApplication.shared.windows.first else {
+                assertionFailure("Invalid windows configuration")
+                return
+            }
+            let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
+            splashViewController.modalTransitionStyle = .crossDissolve
+            splashViewController.modalPresentationStyle = .fullScreen
+            window.rootViewController = splashViewController
+        }
+        let alert = UIAlertController(
+            /// заголовок всплывающего окна
+            title: alertTitle,
+            /// текст во всплывающем окне
+            message:  alertMessage,
+            /// preferredStyle может быть .alert или .actionSheet
+            preferredStyle: .alert)
+        alert.addAction(action)
+        self.present(alert, animated:  true, completion:  nil)
+    }
+    
 }

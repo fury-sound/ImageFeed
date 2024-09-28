@@ -27,7 +27,8 @@ final class ProfileImageService {
     static let shared = ProfileImageService()
     private init() {}
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+//    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let keyChainStorage = KeyChainStorage()
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var userResult: UserResult?
@@ -36,11 +37,11 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, _ handler: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-//        if task != nil {
-//            task?.cancel()
-//        }
+        if task != nil {
+            task?.cancel()
+        }
         
-        guard let token = oauth2TokenStorage.token else {
+        guard let token = keyChainStorage.token else {
             handler(.failure(ProfileServiceError.invalidRequest))
             return
         }
@@ -54,7 +55,9 @@ final class ProfileImageService {
             guard let self else { return }
             switch result {
             case .success(let info):
-                guard let avatarURL = info.profileImage?.smallImage else {return}
+                avatarURL = info.profileImage?.smallImage
+                guard let avatarURL = avatarURL else {return}
+//                print("avatarURL in fetchProfileImageURL -> ProfileImageService \(avatarURL)")
                 handler(.success(avatarURL))
                 NotificationCenter.default.post(
                     name: ProfileImageService.didChangeNotification,
@@ -65,7 +68,7 @@ final class ProfileImageService {
                 print("Decoder error:", error.localizedDescription)
                 handler(.failure(error))
             }
-//            self.task = nil
+            self.task = nil
         }
         
 //        let task1 = urlSession.data(for: request) { [weak self] result in
@@ -99,6 +102,7 @@ final class ProfileImageService {
         self.task = task
         task.resume()
     }
+
     
     private func createImageRequest(_ code: String, _ username: String) -> URLRequest? {
         let baseURLString = "https://api.unsplash.com"
