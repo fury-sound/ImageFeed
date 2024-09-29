@@ -79,7 +79,7 @@ final class ProfileViewController: UIViewController {
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         arrowButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
         
-        //        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = "Екатерина Новикова"
         nameLabel.text = ""
         nameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         nameLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -89,7 +89,7 @@ final class ProfileViewController: UIViewController {
         nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
         
-        //        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = "@ekaterina_nov"
         loginNameLabel.text = ""
         loginNameLabel.font = UIFont(name: "SF Pro", size: 13)
         loginNameLabel.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
@@ -99,7 +99,7 @@ final class ProfileViewController: UIViewController {
         loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
         
-        //        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = "Hello, world!"
         descriptionLabel.text = ""
         descriptionLabel.font = UIFont(name: "SF Pro", size: 13)
         descriptionLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -133,31 +133,20 @@ final class ProfileViewController: UIViewController {
     
     private func updateProfileDetails(profile: Profile) {
         //        print("2 ProfileViewController updateProfileDetails")
-        nameLabel.text = profile.name
-        loginNameLabel.text = profile.loginName
-        if profile.bio != nil {
-            descriptionLabel.text = profile.bio
-        } else {
-            descriptionLabel.text = "Hello, world!"
-        }
-        updateAvatar()
+        //        print("profile.name \(profile.name)")
         
-        //        print(profileService.profile)
-        //        nameLabel.text = profileService.profile?.name
-        //        loginNameLabel.text = profileService.profile?.loginName
-        //        if profileService.profile?.bio != nil {
-        //            descriptionLabel.text = profileService.profile?.bio
-        //        } else {
-        //            descriptionLabel.text = "Hello, world!"
-        //        }
+        nameLabel.text = (profile.name != nil) ? profile.name : "Екатерина Новикова"
+        loginNameLabel.text = (profile.loginName != nil) ? profile.loginName : "@ekaterina_nov"
+        descriptionLabel.text = (profile.bio != nil) ? profile.bio : "Hello, world!"
+        updateAvatar()
     }
     
     // temporary function to clean all UserDefaults values
     private func checkIfTokenIsRemoved() {
-//        let allValues = UserDefaults.standard.dictionaryRepresentation()
-//        allValues.keys.forEach { key in
-//            UserDefaults.standard.removeObject(forKey: key)
-//        }
+        //        let allValues = UserDefaults.standard.dictionaryRepresentation()
+        //        allValues.keys.forEach { key in
+        //            UserDefaults.standard.removeObject(forKey: key)
+        //        }
         // checking if bearerToken was removed
         let keyValue = "bearerToken"
         let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
@@ -173,7 +162,7 @@ final class ProfileViewController: UIViewController {
         let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
         //        keyChainStorage.token = nil
         print("Current token: \(String(describing: keyChainStorage.token))")
-//        checkIfTokenIsRemoved() // calling temporary function
+        //        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")

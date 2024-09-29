@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--ImageList-->
+        <!--Image list-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="ImageList" id="BYZ-38-t0r" customClass="ImagesListViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImagesListViewController" title="Image list" id="BYZ-38-t0r" customClass="ImagesListViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -112,7 +112,7 @@
         <!--Profile-->
         <scene sceneID="TTJ-n2-soE">
             <objects>
-                <viewController storyboardIdentifier="ImagesListViewController" modalPresentationStyle="fullScreen" id="MWv-6C-Hu7" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="fullScreen" id="MWv-6C-Hu7" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleAspectFill" id="17t-X2-tsK">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -288,19 +288,15 @@
         <!--Tab Bar Controller-->
         <scene sceneID="kNm-vL-F7l">
             <objects>
-                <tabBarController storyboardIdentifier="TabBarViewController" id="rRE-Hd-DGS" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="TabBarViewController" id="rRE-Hd-DGS" customClass="TabBarController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="iR7-ZH-x5D"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7m0-f3-isF">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="barTintColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="selectedImageTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="selectedImageTintColor" systemColor="tintColor"/>
                     </tabBar>
-                    <connections>
-                        <segue destination="xBo-lK-Br0" kind="relationship" relationship="viewControllers" id="M6t-Dl-Krc"/>
-                        <segue destination="VuB-71-Yxx" kind="relationship" relationship="viewControllers" id="nqd-wC-wED"/>
-                    </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4D9-wU-jAJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -325,7 +321,7 @@
         <!--Navigation Controller-->
         <scene sceneID="DoF-Ab-8rs">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="xBo-lK-Br0" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationViewController" automaticallyAdjustsScrollViewInsets="NO" id="xBo-lK-Br0" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Active 1" id="uoq-zz-k03"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="mi0-i6-QCA">
@@ -411,6 +407,9 @@
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="tintColor">
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

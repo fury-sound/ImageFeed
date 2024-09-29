@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftKeychainWrapper
 
 final class SplashViewController: UIViewController {
     private let ShowAuthVCSegueIdentifier = "toAuthVC"
@@ -15,11 +16,16 @@ final class SplashViewController: UIViewController {
     private let showTabBarScreenSegueIdentifier = "showTabBarScreenSegueIdentifier"
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
+    var flag2Change = true
     
     @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
+        if flag2Change == true {
+            KeychainWrapper.standard.removeObject(forKey: "bearerToken")
+            flag2Change = false
+        }
         print("1. initial token: \(String(describing: keyChainStorage.token))")
         //TODO: сделать token optional
         if (keyChainStorage.token == "") || (keyChainStorage.token == nil) {
@@ -98,7 +104,12 @@ extension SplashViewController: AuthViewControllerDelegate {
             assertionFailure("Invalid windows configuration")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "TabBarViewController")
+        let tabBarController = TabBarController()
+//        guard var tabBarController else { return }
+        tabBarController.awakeFromNib()
+//        tabBarController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "TabBarViewController")
+//        let tabBarController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "ImagesListViewController")
+        tabBarController.tabBar.barTintColor = .clear
         tabBarController.modalTransitionStyle = .crossDissolve
         tabBarController.modalPresentationStyle = .fullScreen
         window.rootViewController = tabBarController
