@@ -13,7 +13,6 @@ final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
     private var oauth2TokenStorage = OAuth2TokenStorage()
-//    private let keyChainStorage = KeyChainStorage()
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     
@@ -35,24 +34,19 @@ final class ProfileViewController: UIViewController {
             guard let self = self else { return }
             self.updateAvatar()
         }
-        //        updateAvatar()
-        //        print("1 ProfileViewController ProfileViewControllerviewDidLoad")
-        //        print(profileService.profile, profileService.profileResult)
+
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
         profileSetup()
     }
     
     private func updateAvatar() {
-        //        print("in updateAvatar \(String(describing: profileImageService.avatarURL))")
         guard
             let profileImageURL = profileImageService.avatarURL,
             let url = URL(string: profileImageURL)
         else {
-            print("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
+            debugPrint("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
             return
         }
-        //TODO Обновить аватар с помощью Kingfisher
-        //        print("avatarURL in ProfileViewController \(profileImageURL)")
         let processor = RoundCornerImageProcessor(cornerRadius: 20)
         imageView.kf.setImage(with: url,
                               options: [
@@ -61,8 +55,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func profileSetup() {
-        
-        //        imageView = UIImageView(image: profileImage)
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
@@ -112,29 +104,9 @@ final class ProfileViewController: UIViewController {
         guard let profile = profileService.profile else {return}
         updateProfileDetails(profile: profile)
         
-        //        guard let token = oauth2TokenStorage.token else { return }
-        //        profileService.fetchProfile(token) { result in
-        //            switch result {
-        //            case .success(let profile):
-        //                print("profile")
-        //                self.nameLabel.text = profile.name
-        //                self.loginNameLabel.text = profile.loginName
-        //                if profile.bio != nil {
-        //                    self.descriptionLabel.text = profile.bio
-        //                } else {
-        //                    self.descriptionLabel.text = "Hello, world!"
-        //                }
-        //            case .failure(let error):
-        //                print("Profile fetch error", error)
-        //            }
-        //        }
-        
     }
     
-    private func updateProfileDetails(profile: Profile) {
-        //        print("2 ProfileViewController updateProfileDetails")
-        //        print("profile.name \(profile.name)")
-        
+    private func updateProfileDetails(profile: Profile) {        
         nameLabel.text = (profile.name != nil) ? profile.name : "Екатерина Новикова"
         loginNameLabel.text = (profile.loginName != nil) ? profile.loginName : "@ekaterina_nov"
         descriptionLabel.text = (profile.bio != nil) ? profile.bio : "Hello, world!"
@@ -143,26 +115,19 @@ final class ProfileViewController: UIViewController {
     
     // temporary function to clean all UserDefaults values
     private func checkIfTokenIsRemoved() {
-        //        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        //        allValues.keys.forEach { key in
-        //            UserDefaults.standard.removeObject(forKey: key)
-        //        }
         // checking if bearerToken was removed
         let keyValue = "bearerToken"
         let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
         guard let isSuccess else {
-            print("token value is nil")
+            debugPrint("token value is nil: isSuccess -> ProfileViewController")
             return
         }
-        print("isSuccess in ProfileViewController \(isSuccess)")
     }
     
     // logout button function
     @objc private func logoutAction() {
-        print("Current token before delete: \(String(describing: oauth2TokenStorage.token))")
         oauth2TokenStorage.token = ""
-        let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-        print("Current token after delete: \(String(describing: oauth2TokenStorage.token))")
+        let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
         //        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
@@ -170,7 +135,6 @@ final class ProfileViewController: UIViewController {
             return
         }
         let splashViewController = SplashViewController()
-//        let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
         splashViewController.modalTransitionStyle = .crossDissolve
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController

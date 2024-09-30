@@ -16,7 +16,6 @@ enum AuthServiceError: Error {
 }
 
 final class OAuth2Service {
-    var counter = 0
     static let shared = OAuth2Service()
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
@@ -24,16 +23,13 @@ final class OAuth2Service {
     private let oauth2Storage = OAuth2TokenStorage()
 
     private init() {}
-    //    private var finalRequest: URLRequest?
-    //    var networkClient = NetworkClient()
-    
     
     private func createURLRequest(_ code: String) -> URLRequest? {
         let baseURLString = "https://unsplash.com"
         let finalURLString = baseURLString + "/oauth/token"
         
         guard var urlComponents = URLComponents(string: finalURLString) else {
-            print("Error in creating URL string for authorization request")
+            debugPrint("Error in creating URL string for authorization request: createURLRequest -> OAuth2Service")
             return nil
         }
         urlComponents.queryItems = [
@@ -44,7 +40,7 @@ final class OAuth2Service {
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
         guard let url = urlComponents.url else {
-            print("Error of url from urlComponents.url for authorization request")
+            debugPrint("Error of url from urlComponents.url for authorization request")
             return nil
         }
         var request = URLRequest(url: url)
@@ -54,26 +50,8 @@ final class OAuth2Service {
     
     
     func fetchOAuthToken(code: String, handler: @escaping (Result<String, Error>) -> Void) {
-        //        createURLRequest(code)
-        //        guard var request = finalRequest else { return }
+
         assert(Thread.isMainThread)
-//        guard let lastCode = self.lastCode else {
-//            print("lastCode error")
-//            return
-//        }
-//        if task != nil {
-//            if lastCode != code {
-//                task?.cancel()
-//            } else {
-//                handler(.failure(AuthServiceError.invalidRequest))
-//                return
-//            }
-//        } else {
-//            if lastCode == code {
-//                handler(.failure(AuthServiceError.invalidRequest))
-//                return
-//            }
-//        }
         
         guard lastCode != code else {
             handler(.failure(AuthServiceError.invalidRequest))
@@ -81,7 +59,6 @@ final class OAuth2Service {
         }
         task?.cancel()
         self.lastCode = code
-//        print("lastCode in fetchOAuthToken -> OAuth2Service, \(String(describing: self.lastCode)), \(String(describing: lastCode)); code: \(code)")
         guard let request = createURLRequest(code) else {
             handler(.failure(AuthServiceError.invalidRequest))
             return
@@ -93,10 +70,9 @@ final class OAuth2Service {
             case .success(let info):
                 guard let token = info.access_token else { return }
                 oauth2Storage.token = token
-//                print("token in new task: \(token), \(String(describing: oauth2Storage.token))")
                 handler(.success(token))
             case .failure(let error):
-                print("Cannot receive token in fetchOAuthToken, OAuth2Service")
+                debugPrint("Cannot receive token: fetchOAuthToken -> OAuth2Service")
                 handler(.failure(error))
                 self.lastCode = nil
             }
@@ -106,26 +82,5 @@ final class OAuth2Service {
         
         self.task = task
         task.resume()
-        
-        //        let task = urlSession.data(for: request) { result in
-        //            switch result {
-        //            case .success(let token):
-        //                do {
-        //                    let response = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: token)
-        //                    handler(.success(response.access_token!))
-        //                } catch(let error) {
-        //                    print("Decoder error:", error.localizedDescription)
-        //                    handler(.failure(error))
-        //                }
-        //            case .failure(let error):
-        //                print("fetch request error:", error.localizedDescription)
-        //                handler(.failure(error))
-        //                self.lastCode = nil
-        //            }
-        //            self.task = nil
-        //        }
-        
-
-        
     }
 }

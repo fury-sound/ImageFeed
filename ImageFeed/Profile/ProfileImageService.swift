@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct UserResult: Codable {
+private struct UserResult: Codable {
     let profileImage: smallUserImage?
     
     enum CodingKeys: String, CodingKey {
@@ -15,7 +15,7 @@ struct UserResult: Codable {
     }
 }
 
-struct smallUserImage: Codable {
+private struct smallUserImage: Codable {
     let smallImage: String?
     
     enum CodingKeys: String, CodingKey {
@@ -56,7 +56,6 @@ final class ProfileImageService {
             case .success(let info):
                 avatarURL = info.profileImage?.smallImage
                 guard let avatarURL = avatarURL else {return}
-//                print("avatarURL in fetchProfileImageURL -> ProfileImageService \(avatarURL)")
                 handler(.success(avatarURL))
                 NotificationCenter.default.post(
                     name: ProfileImageService.didChangeNotification,
@@ -64,39 +63,11 @@ final class ProfileImageService {
                     userInfo: ["URL" : avatarURL]
                 )
             case .failure(let error):
-                print("Decoder error:", error.localizedDescription)
+                debugPrint("Decoder error:", error.localizedDescription)
                 handler(.failure(error))
             }
             self.task = nil
         }
-        
-//        let task1 = urlSession.data(for: request) { [weak self] result in
-//            guard let self = self else { return }
-//            switch result {
-//            case .success(let data):
-//                do {
-//                    print("1 fetchProfileImageURL in do")
-//                    let response = try JSONDecoder().decode(UserResult.self, from: data)
-//                    self.avatarURL = response.profileImage?.smallImage
-//                    guard let avatarURL = self.avatarURL else {return}
-//                    //                    print(avatarURL)
-//                    NotificationCenter.default.post(
-//                        name: ProfileImageService.didChangeNotification,
-//                        object: self,
-//                        userInfo: ["URL" : avatarURL]
-//                    )
-////                    print("avatarURL after NotificationCenter", avatarURL)
-//                    handler(.success(avatarURL))
-//                } catch(let error) {
-//                    print("Decoder error:", error.localizedDescription)
-//                    handler(.failure(error))
-//                }
-//            case .failure(let error):
-//                print("fetch image request error:", error.localizedDescription)
-//                handler(.failure(error))
-//            }
-//            self.task = nil
-//        }
         
         self.task = task
         task.resume()

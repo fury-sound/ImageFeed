@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct ProfileResult: Codable {
+private struct ProfileResult: Codable {
     var userName: String?
     var firstName: String?
     var lastName: String?
@@ -23,7 +23,7 @@ struct ProfileResult: Codable {
     }
 }
 
-struct ProfileImageURL: Codable {
+private struct ProfileImageURL: Codable {
     var smallImage: String?
     
     private enum CodingKeys: String, CodingKey {
@@ -46,9 +46,7 @@ enum ProfileServiceError: Error {
 final class ProfileService {
     static let shared = ProfileService()
     private init() {}
-    private var profileResult: ProfileResult? //= ProfileResult()
-//    private let oauth2TokenStorage = OAuth2TokenStorage()
-//    private let keyChainStorage = KeyChainStorage()
+    private var profileResult: ProfileResult?
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private(set) var profile: Profile?
@@ -56,7 +54,6 @@ final class ProfileService {
     private func createURLRequest(_ code: String) -> URLRequest? {
         let baseURLString = "https://api.unsplash.com"
         let finalURLString = URL(string: baseURLString + "/me")
-        //        print("in createURLRequest, token: \(code)")
         guard let url = finalURLString else {return nil}
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -65,9 +62,8 @@ final class ProfileService {
     }
     
     
-    func profileUpdate(profileInt: Profile) {
+    private func profileUpdate(profileInt: Profile) {
         guard var profile = self.profile else { return }
-        //        print("in profileUpdate")
         profile.name = profileInt.name
         profile.loginName = profileInt.loginName
         if profileInt.bio != nil {
@@ -78,7 +74,6 @@ final class ProfileService {
     }
     
     func fetchProfile(_ token: String, handler: @escaping (Result<Profile, Error>) -> Void) {
-        //        print("1 fetchProfile")
         assert(Thread.isMainThread)
         // избегаем гонку
         if task != nil {
@@ -91,18 +86,9 @@ final class ProfileService {
         }
         
         let task = urlSession.objectTask(for: request) { (result: Result<ProfileResult, Error>) in
-//            guard let self else {
-//                print("no self in urlSession.objectTask -> ProfileService")
-//                return
-//            }
+
             switch result {
             case .success(let profileRes):
-//                let imageAccessURL = profileRes.profileImageURL?.smallImage
-//                guard let imageTrueURL = imageAccessURL else {
-//                    print("cannot load imageURL")
-//                    return
-//                }
-//                print("imageTrueURL in fetchProfile -> ProfileService \(imageTrueURL)")
                 self.profile = Profile(username: profileRes.userName ?? "",
                                        name: (profileRes.firstName ?? "") + " " + (profileRes.lastName ?? ""),
                                        loginName: "@" + (profileRes.userName ?? ""),
@@ -110,7 +96,7 @@ final class ProfileService {
                 guard let profile = self.profile else { return }
                 handler(.success(profile))
             case .failure(let error):
-                print("Cannot receive token, urlSession.objectTask -> fetchProfile -> ProfileService")
+                debugPrint("Cannot receive token, urlSession.objectTask -> fetchProfile -> ProfileService")
                 handler(.failure(error))
             }
             self.task = nil
@@ -121,81 +107,6 @@ final class ProfileService {
         
     }
 }
-            
-            
-            //        print("request in fetchProfile: \(request), \(request.allHTTPHeaderFields)")
-            
-            //        let task1 = urlSession.data(for: request) { [weak self] result in
-            //            guard let self else {return}
-            //            switch result {
-            //            case .success(let data):
-            ////                print("fetchProfile - in success do")
-            //                do {
-            ////                    print("1 fetchProfile in do")
-            //                    let response = try JSONDecoder().decode(ProfileResult.self, from: data)
-            //                    let imageURL = response.profileImageURL?.smallImage
-            ////                    print(imageURL)
-            ////                    guard var profile = self.profile else {
-            ////                        print("no profile", profile)
-            ////                        return
-            ////                    }
-            //                    self.profile = Profile(username: response.userName,
-            //                                      name: response.firstName + " " + response.lastName,
-            //                                      loginName: "@" + response.userName,
-            //                                      bio: response.bio,
-            //                                      imageURL: imageURL)
-            ////                    print("2 fetchProfile", self.profile)
-            //                    guard let profile = self.profile else {
-            //                        print("fetchProfile - no profile received", profile)
-            //                        return
-            //                    }
-            ////                    print("2.fetchProfile profile", profile, type(of: profile))
-            //                    handler(.success(profile))
-            //                } catch(let error) {
-            //                    print("Decoder error:", error.localizedDescription)
-            //                    handler(.failure(error))
-            //                }
-            //            case .failure(let error):
-            //                print("fetch data request error:", error.localizedDescription)
-            //                handler(.failure(error))
-            //            }
-            //            self.task = nil
-            //        }
-            
-            
-            
-            //            switch result {
-            //            case .success(let data):
-            ////                print("fetchProfile - in success do")
-            //                do {
-            ////                    print("1 fetchProfile in do")
-            //                    let response = try JSONDecoder().decode(ProfileResult.self, from: data)
-            //                    let imageURL = response.profileImageURL?.smallImage
-            ////                    print(imageURL)
-            ////                    guard var profile = self.profile else {
-            ////                        print("no profile", profile)
-            ////                        return
-            ////                    }
-            //                    self.profile = Profile(username: response.userName,
-            //                                      name: response.firstName + " " + response.lastName,
-            //                                      loginName: "@" + response.userName,
-            //                                      bio: response.bio,
-            //                                      imageURL: imageURL)
-            ////                    print("2 fetchProfile", self.profile)
-            //                    guard let profile = self.profile else {
-            //                        print("fetchProfile - no profile received", profile)
-            //                        return
-            //                    }
-            ////                    print("2.fetchProfile profile", profile, type(of: profile))
-            //                    handler(.success(profile))
-            //                } catch(let error) {
-            //                    print("Decoder error:", error.localizedDescription)
-            //                    handler(.failure(error))
-            //                }
-            //            case .failure(let error):
-            //                print("fetch data request error:", error.localizedDescription)
-            //                handler(.failure(error))
-            //            }
 
     
 
