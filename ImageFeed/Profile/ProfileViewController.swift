@@ -12,8 +12,8 @@ import SwiftKeychainWrapper
 final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
-    //    private var oauth2TokenStorage = OAuth2TokenStorage()
-    private let keyChainStorage = KeyChainStorage()
+    private var oauth2TokenStorage = OAuth2TokenStorage()
+//    private let keyChainStorage = KeyChainStorage()
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     
@@ -159,16 +159,18 @@ final class ProfileViewController: UIViewController {
     
     // logout button function
     @objc private func logoutAction() {
+        print("Current token before delete: \(String(describing: oauth2TokenStorage.token))")
+        oauth2TokenStorage.token = ""
         let removeSuccessful: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-        //        keyChainStorage.token = nil
-        print("Current token: \(String(describing: keyChainStorage.token))")
+        print("Current token after delete: \(String(describing: oauth2TokenStorage.token))")
         //        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
             return
         }
-        let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
+        let splashViewController = SplashViewController()
+//        let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
         splashViewController.modalTransitionStyle = .crossDissolve
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController

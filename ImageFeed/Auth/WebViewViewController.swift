@@ -21,9 +21,11 @@ final class WebViewViewController: UIViewController {
     
     @IBOutlet private weak var webView: WKWebView!
     @IBOutlet private weak var progressView: UIProgressView!
+    let backButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        backButtonSetup()
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
              options: [],
@@ -34,6 +36,18 @@ final class WebViewViewController: UIViewController {
         webView.navigationDelegate = self
         loadAuthView()
         //        updateProgress() - old KVO
+    }
+    
+    func backButtonSetup() {
+        let buttonImage = UIImage(named: "nav_back_button")
+        backButton.setImage(buttonImage, for: .normal)
+        backButton.addTarget(self, action: #selector(tapBackButton), for: .touchUpInside) // back action
+        view.addSubview(backButton)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 9).isActive = true
+        backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 9).isActive = true
+        backButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
     }
     
     // подписка на наблюдателя - old KVO
@@ -68,6 +82,19 @@ final class WebViewViewController: UIViewController {
 //                context: context)
 //        }
 //    }
+    
+    
+//    @IBAction private func tapBackButton(_ sender: Any) {
+//        guard let delegate else { return }
+//        delegate.webViewViewControllerDidCancel(self)
+//    }
+    
+    @objc private func tapBackButton() {
+        guard let delegate else { return }
+        delegate.webViewViewControllerDidCancel(self)
+    }
+    
+    
     
     // обновление прогрессе в progressView
     private func updateProgress() {
@@ -134,39 +161,9 @@ extension WebViewViewController: WKNavigationDelegate {
 //            let codeItem1 = urlComponentsCheck.queryItems?.first(where: { $0.name == "code" })
 //            print("codeItem.value \(codeItem1)")
             debugPrint("No code was received")
-//            authErrorAlert()
             return nil
         }
     }
-    
-    private func authErrorAlert() {
-        
-        let alertText = "OK"
-        let alertTitle = "Что-то пошло не так ((("
-        let alertMessage = "Не удалось войти в систему"
-        
-        let action = UIAlertAction(title: alertText, style: .default) { _ in
-//            print("Current token: \(String(describing: oauth2TokenStorage.token))")
-            //        cleanUserDefaults() // calling temporary function
-//            self.dismiss(animated: true)
-            guard let window = UIApplication.shared.windows.first else {
-                assertionFailure("Invalid windows configuration")
-                return
-            }
-            let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
-            splashViewController.modalTransitionStyle = .crossDissolve
-            splashViewController.modalPresentationStyle = .fullScreen
-            window.rootViewController = splashViewController
-        }
-        let alert = UIAlertController(
-            /// заголовок всплывающего окна
-            title: alertTitle,
-            /// текст во всплывающем окне
-            message:  alertMessage,
-            /// preferredStyle может быть .alert или .actionSheet
-            preferredStyle: .alert)
-        alert.addAction(action)
-        self.present(alert, animated:  true, completion:  nil)
-    }
+
     
 }

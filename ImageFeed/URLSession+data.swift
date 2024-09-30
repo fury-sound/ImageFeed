@@ -63,16 +63,54 @@ extension URLSession {
                     let response = try decoder.decode(T.self, from: info)
                     completion(.success(response))
                 } catch(let error) {
-                    print("URLSession-objectTask: Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
+                    print("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):
 //                print("4 objtask")
                 print("URLSession-objectTask(): Cannot receive JSON", error.localizedDescription)
+//                DispatchQueue.main.async {
+//                    self.authErrorAlert()
+//                }
                 completion(.failure(error))
             }
         }
         return task
+    }
+    
+    private func authErrorAlert() {
+        print("in Alert method")
+        let alertText = "OK"
+        let alertTitle = "Что-то пошло не так ((("
+        let alertMessage = "Не удалось войти в систему"
+//        print("top most VC \(UIApplication.shared.windows[0].rootViewController)")
+        guard var rootVC = UIApplication.shared.windows[0].rootViewController else { return }
+        print("\(rootVC)")
+
+        let alert = UIAlertController(
+            /// заголовок всплывающего окна
+            title: alertTitle,
+            /// текст во всплывающем окне
+            message:  alertMessage,
+            /// preferredStyle может быть .alert или .actionSheet
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: alertText, style: .default) { _ in
+            print("in UIAlertAction")
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(action)
+        
+        if var topController = rootVC.presentedViewController {
+            while let presented = topController.presentedViewController {
+                topController = presented
+            }
+            topController.present(alert, animated: true)
+            return
+        }
+
+        rootVC.present(alert, animated: true)
     }
     
 }

@@ -27,8 +27,7 @@ final class ProfileImageService {
     static let shared = ProfileImageService()
     private init() {}
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
-//    private let oauth2TokenStorage = OAuth2TokenStorage()
-    private let keyChainStorage = KeyChainStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage()
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var userResult: UserResult?
@@ -41,7 +40,7 @@ final class ProfileImageService {
             task?.cancel()
         }
         
-        guard let token = keyChainStorage.token else {
+        guard let token = oauth2TokenStorage.token else {
             handler(.failure(ProfileServiceError.invalidRequest))
             return
         }

@@ -186,7 +186,7 @@
         <!--Auth View Controller-->
         <scene sceneID="Pf5-ov-BOK">
             <objects>
-                <viewController id="mex-qG-2q2" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthViewController" id="mex-qG-2q2" customClass="AuthViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ikE-Xe-CHh">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -237,6 +237,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0TM-b7-0ye"/>
+                    <connections>
+                        <outlet property="enterButton" destination="SQn-Ee-QJo" id="hz3-xo-qw0"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qWS-uh-unp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -247,11 +250,11 @@
             <objects>
                 <viewController id="grB-jL-h5n" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QT2-bT-V1h">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zTI-JH-LLZ">
-                                <rect key="frame" x="0.0" y="44" width="393" height="808"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -259,7 +262,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4e7-Cf-YbF">
-                                <rect key="frame" x="0.0" y="44" width="393" height="4"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="4"/>
                                 <color key="progressTintColor" name="ypBlack"/>
                             </progressView>
                         </subviews>
@@ -345,26 +348,23 @@
         <!--Navigation Controller-->
         <scene sceneID="AWK-oX-YHj">
             <objects>
-                <navigationController storyboardIdentifier="AuthorizeVC" automaticallyAdjustsScrollViewInsets="NO" id="MKd-RB-mHO" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationToAuthVC" automaticallyAdjustsScrollViewInsets="NO" id="MKd-RB-mHO" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="yin-jc-qYE"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="fMB-Ho-4hf">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="44"/>
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="mex-qG-2q2" kind="relationship" relationship="rootViewController" id="cfW-HR-dNe"/>
-                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NhP-Xi-nFz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-969" y="-628"/>
         </scene>
-        <!--Splash View Controller-->
+        <!--Splash View Controller_OLD-->
         <scene sceneID="Ry1-Ti-mjM">
             <objects>
-                <viewController storyboardIdentifier="SplashViewVC" id="C9R-hn-VN5" customClass="SplashViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SplashViewVC" id="C9R-hn-VN5" userLabel="Splash View Controller_OLD" customClass="SplashViewController_OLD" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="s72-i7-BRf">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -385,7 +385,6 @@
                     </view>
                     <connections>
                         <outlet property="imageView" destination="Lfk-9n-Gc1" id="elN-eW-B0v"/>
-                        <segue destination="MKd-RB-mHO" kind="presentation" identifier="showAuthenticationScreenSegueIdentifier" modalPresentationStyle="fullScreen" id="mau-DO-KT1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3hI-1p-xFB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

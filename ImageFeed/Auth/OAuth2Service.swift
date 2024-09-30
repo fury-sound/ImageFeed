@@ -21,8 +21,7 @@ final class OAuth2Service {
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
-//    private let oauth2Storage = OAuth2TokenStorage()
-    private let keyChainStorage = KeyChainStorage()
+    private let oauth2Storage = OAuth2TokenStorage()
 
     private init() {}
     //    private var finalRequest: URLRequest?
@@ -93,8 +92,8 @@ final class OAuth2Service {
             switch result {
             case .success(let info):
                 guard let token = info.access_token else { return }
-                keyChainStorage.token = token
-//                print("token in new task: \(token), \(String(describing: keyChainStorage.token))")
+                oauth2Storage.token = token
+//                print("token in new task: \(token), \(String(describing: oauth2Storage.token))")
                 handler(.success(token))
             case .failure(let error):
                 print("Cannot receive token in fetchOAuthToken, OAuth2Service")

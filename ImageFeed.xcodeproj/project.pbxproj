@@ -28,6 +28,7 @@
 		B987E74C2CA86AB100CC6BD8 /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B987E74B2CA86AB100CC6BD8 /* SwiftKeychainWrapper */; };
 		B987E74E2CA86BC000CC6BD8 /* KeyChainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B987E74D2CA86BC000CC6BD8 /* KeyChainStorage.swift */; };
 		B987E7502CA8916B00CC6BD8 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B987E74F2CA8916B00CC6BD8 /* TabBarController.swift */; };
+		B987E7522CA9739E00CC6BD8 /* SplashViewController_OLD.swift in Sources */ = {isa = PBXBuildFile; fileRef = B987E7512CA9739E00CC6BD8 /* SplashViewController_OLD.swift */; };
 		B9D623152C8A638200B9CDDE /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D623142C8A638200B9CDDE /* SplashViewController.swift */; };
 		B9D7761D2CA2203800DC23FC /* ProfileImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D7761C2CA2203800DC23FC /* ProfileImageService.swift */; };
 		B9E984AF2C6146CB0001C03A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E984AE2C6146CB0001C03A /* AppDelegate.swift */; };
@@ -58,6 +59,7 @@
 		B97D8F092C848C7500C60E81 /* WebViewViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewControllerDelegate.swift; sourceTree = "<group>"; };
 		B987E74D2CA86BC000CC6BD8 /* KeyChainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainStorage.swift; sourceTree = "<group>"; };
 		B987E74F2CA8916B00CC6BD8 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		B987E7512CA9739E00CC6BD8 /* SplashViewController_OLD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController_OLD.swift; sourceTree = "<group>"; };
 		B9D623142C8A638200B9CDDE /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		B9D7761C2CA2203800DC23FC /* ProfileImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImageService.swift; sourceTree = "<group>"; };
 		B9E984AB2C6146CB0001C03A /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,6 +158,7 @@
 				B92D67292C81064F007C44E9 /* Profile */,
 				B92A7E152C7215E700E4C8EA /* SingleImageViewController.swift */,
 				B9D623142C8A638200B9CDDE /* SplashViewController.swift */,
+				B987E7512CA9739E00CC6BD8 /* SplashViewController_OLD.swift */,
 				B987E74F2CA8916B00CC6BD8 /* TabBarController.swift */,
 				B91392C92C87DE9800FB99FB /* URLSession+data.swift */,
 				B9E984AE2C6146CB0001C03A /* AppDelegate.swift */,
@@ -255,6 +258,7 @@
 				B9E984B32C6146CB0001C03A /* ImagesListViewController.swift in Sources */,
 				B91392CA2C87DE9900FB99FB /* URLSession+data.swift in Sources */,
 				B97D8F0A2C848C7500C60E81 /* WebViewViewControllerDelegate.swift in Sources */,
+				B987E7522CA9739E00CC6BD8 /* SplashViewController_OLD.swift in Sources */,
 				B9145AD12C64149800975804 /* ImagesListCell.swift in Sources */,
 				B94136AF2C6E5A69008E3FE5 /* ProfileViewController.swift in Sources */,
 				B987E74E2CA86BC000CC6BD8 /* KeyChainStorage.swift in Sources */,
