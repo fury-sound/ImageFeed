@@ -74,7 +74,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
         let alertText = "OK"
         let alertTitle = "Что-то пошло не так ((("
         let alertMessage = "Не удалось войти в систему"
-        guard var rootVC = UIApplication.shared.windows[0].rootViewController else { return }
+        guard let rootVC = UIApplication.shared.windows[0].rootViewController else { return }
 
         let alert = UIAlertController(
             /// заголовок всплывающего окна
@@ -97,7 +97,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
             topController.present(alert, animated: true)
             return
         }
-
         rootVC.present(alert, animated: true)
     }
 }
