@@ -57,8 +57,9 @@ extension AuthViewController: WebViewViewControllerDelegate {
             UIBlockingProgressHUD.dismiss()
 
             switch result {
-            case .success(let accessCode):
+            case .success:
                 self.delegate?.didAuthenticate(self)
+                dismiss(animated: false, completion: nil)
             case .failure(let error):
                 debugPrint("Authentication error: webViewViewController -> AuthViewController: \(error.localizedDescription)")
                 DispatchQueue.main.async {
