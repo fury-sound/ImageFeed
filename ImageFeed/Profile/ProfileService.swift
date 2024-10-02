@@ -85,7 +85,11 @@ final class ProfileService {
             return
         }
         
-        let task = urlSession.objectTask(for: request) { (result: Result<ProfileResult, Error>) in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
+            guard let self else {
+                debugPrint("self error in fetchProfile -> ProfileService")
+                return
+            }
 
             switch result {
             case .success(let profileRes):

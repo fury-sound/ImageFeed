@@ -64,7 +64,7 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     
     func didAuthenticate(_ vc: AuthViewController) {
-        vc.dismiss(animated: true) { [weak self] in
+        vc.presentingViewController?.dismiss(animated: true) { [weak self] in
             guard let self else {
                 debugPrint("error with self in didAuthenticate -> splashVC")
                 return
@@ -73,20 +73,20 @@ extension SplashViewController: AuthViewControllerDelegate {
         }
     }
     
-    private func showSplashVC() {
-        view.backgroundColor = .ypBlack
-        let logoImage = UIImage(named: "Logo_of_Unsplash")
-        let logoImageView = UIImageView(image: logoImage)
-        logoImageView.backgroundColor = .clear
-        view.addSubview(logoImageView)
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageView.heightAnchor.constraint(equalToConstant: 60),
-            logoImageView.widthAnchor.constraint(equalToConstant: 60)
-        ])
-    }
+//    private func showSplashVC() {
+//        view.backgroundColor = .ypBlack
+//        let logoImage = UIImage(named: "Logo_of_Unsplash")
+//        let logoImageView = UIImageView(image: logoImage)
+//        logoImageView.backgroundColor = .clear
+//        view.addSubview(logoImageView)
+//        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+//            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            logoImageView.heightAnchor.constraint(equalToConstant: 60),
+//            logoImageView.widthAnchor.constraint(equalToConstant: 60)
+//        ])
+//    }
     
     private func fetchProfileInSplashVC(_ token: String) {
         var routeInt = 0

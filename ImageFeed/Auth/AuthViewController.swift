@@ -21,6 +21,7 @@ final class AuthViewController: UIViewController {
         if segue.identifier == ShowWebViewSegueIdentifier {
             guard let webViewViewController = segue.destination as? WebViewViewController
             else { fatalError("Failed to prepare for \(ShowWebViewSegueIdentifier)") }
+            webViewViewController.modalPresentationStyle = .fullScreen
             webViewViewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
@@ -29,12 +30,6 @@ final class AuthViewController: UIViewController {
     
     func makeDelegate(_ delegate: AuthViewControllerDelegate) {
         self.delegate = delegate
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-
-        guard let delegate else { return }
-        view.insertSubview(delegate as? UIView ?? UIView(), at: 0)
     }
     
     override func viewDidLoad() {
@@ -58,8 +53,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
 
             switch result {
             case .success:
+//                self.presentingViewController?.dismiss(animated: false, completion: nil)
                 self.delegate?.didAuthenticate(self)
-                dismiss(animated: false, completion: nil)
             case .failure(let error):
                 debugPrint("Authentication error: webViewViewController -> AuthViewController: \(error.localizedDescription)")
                 DispatchQueue.main.async {

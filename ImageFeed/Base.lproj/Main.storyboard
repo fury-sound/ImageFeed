@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="C9R-hn-VN5">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -329,36 +329,6 @@
             </objects>
             <point key="canvasLocation" x="1794.6564885496182" y="-317.6056338028169"/>
         </scene>
-        <!--Splash View Controller_OLD-->
-        <scene sceneID="Ry1-Ti-mjM">
-            <objects>
-                <viewController storyboardIdentifier="SplashViewVC" id="C9R-hn-VN5" userLabel="Splash View Controller_OLD" customClass="SplashViewController_OLD" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="s72-i7-BRf">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imageFeedLogo" translatesAutoresizingMaskIntoConstraints="NO" id="Lfk-9n-Gc1">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </imageView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="4hX-hk-AIY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="Lfk-9n-Gc1" firstAttribute="top" secondItem="s72-i7-BRf" secondAttribute="top" id="6xX-2p-ryk"/>
-                            <constraint firstItem="Lfk-9n-Gc1" firstAttribute="leading" secondItem="s72-i7-BRf" secondAttribute="leading" id="ceH-5J-qp8"/>
-                            <constraint firstAttribute="bottom" secondItem="Lfk-9n-Gc1" secondAttribute="bottom" id="nip-RF-1gY"/>
-                            <constraint firstAttribute="trailing" secondItem="Lfk-9n-Gc1" secondAttribute="trailing" id="ucg-n1-yDy"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="imageView" destination="Lfk-9n-Gc1" id="elN-eW-B0v"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3hI-1p-xFB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-607" y="144"/>
-        </scene>
     </scenes>
     <resources>
         <image name="0" width="1600" height="1059"/>
@@ -367,7 +337,6 @@
         <image name="Backward" width="24" height="24"/>
         <image name="Logo_of_Unsplash" width="60" height="60"/>
         <image name="Sharing" width="51" height="51"/>
-        <image name="imageFeedLogo" width="75" height="78"/>
         <namedColor name="ypBlack">
             <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

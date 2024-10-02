@@ -8,18 +8,18 @@
 import UIKit
 
 private struct UserResult: Codable {
-    let profileImage: smallUserImage?
+    let profileImage: userImage?
     
     enum CodingKeys: String, CodingKey {
         case profileImage = "profile_image"
     }
 }
 
-private struct smallUserImage: Codable {
-    let smallImage: String?
+private struct userImage: Codable {
+    let actualUserImage: String?
     
     enum CodingKeys: String, CodingKey {
-        case smallImage = "small"
+        case actualUserImage = "medium"
     }
 }
 
@@ -54,7 +54,7 @@ final class ProfileImageService {
             guard let self else { return }
             switch result {
             case .success(let info):
-                avatarURL = info.profileImage?.smallImage
+                avatarURL = info.profileImage?.actualUserImage
                 guard let avatarURL = avatarURL else {return}
                 handler(.success(avatarURL))
                 NotificationCenter.default.post(

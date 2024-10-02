@@ -31,7 +31,9 @@ final class ProfileViewController: UIViewController {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self = self else {
+                debugPrint("no self in viewDidLoad -> ProfileViewController")
+                return }
             self.updateAvatar()
         }
 
@@ -47,6 +49,7 @@ final class ProfileViewController: UIViewController {
             debugPrint("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
             return
         }
+        print("in updateAvatar")
         let processor = RoundCornerImageProcessor(cornerRadius: 20)
         imageView.kf.setImage(with: url,
                               options: [
