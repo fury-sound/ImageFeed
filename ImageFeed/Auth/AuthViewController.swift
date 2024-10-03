@@ -45,7 +45,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-
         UIBlockingProgressHUD.show()
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self = self else {return}
@@ -53,45 +52,15 @@ extension AuthViewController: WebViewViewControllerDelegate {
 
             switch result {
             case .success:
-//                self.presentingViewController?.dismiss(animated: false, completion: nil)
-                self.delegate?.didAuthenticate(self)
+                self.dismiss(animated: false, completion: nil)
+                self.delegate?.didAuthenticate(self, success: true)
             case .failure(let error):
                 debugPrint("Authentication error: webViewViewController -> AuthViewController: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.authErrorAlert()
-                }
+                self.dismiss(animated: false, completion: nil)
+                self.delegate?.didAuthenticate(self, success: false)
                 break
             }
-        }
-    }
-    
-    private func authErrorAlert() {
-        let alertText = "OK"
-        let alertTitle = "Что-то пошло не так ((("
-        let alertMessage = "Не удалось войти в систему"
-        guard let rootVC = UIApplication.shared.windows[0].rootViewController else { return }
 
-        let alert = UIAlertController(
-            /// заголовок всплывающего окна
-            title: alertTitle,
-            /// текст во всплывающем окне
-            message:  alertMessage,
-            /// preferredStyle может быть .alert или .actionSheet
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: alertText, style: .default) { _ in
-            alert.dismiss(animated: true)
         }
-        
-        alert.addAction(action)
-        
-        if var topController = rootVC.presentedViewController {
-            while let presented = topController.presentedViewController {
-                topController = presented
-            }
-            topController.present(alert, animated: true)
-            return
-        }
-        rootVC.present(alert, animated: true)
     }
 }

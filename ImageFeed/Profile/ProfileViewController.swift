@@ -36,7 +36,6 @@ final class ProfileViewController: UIViewController {
                 return }
             self.updateAvatar()
         }
-
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
         profileSetup()
     }
@@ -49,11 +48,12 @@ final class ProfileViewController: UIViewController {
             debugPrint("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
             return
         }
-        print("in updateAvatar")
-        let processor = RoundCornerImageProcessor(cornerRadius: 20)
+        let processor = RoundCornerImageProcessor(cornerRadius: 36, backgroundColor: .clear)
+        imageView.kf.indicatorType = .activity
         imageView.kf.setImage(with: url,
                               options: [
-                                .processor(processor)
+                                .processor(processor),
+                                .cacheSerializer(FormatIndicatedCacheSerializer.png)
                               ])
     }
     

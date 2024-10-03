@@ -12,22 +12,12 @@ private struct ProfileResult: Codable {
     var firstName: String?
     var lastName: String?
     var bio: String?
-    var profileImageURL: ProfileImageURL?
     
     enum CodingKeys: String, CodingKey {
         case userName = "username"
         case firstName = "first_name"
         case lastName = "last_name"
         case bio = "bio"
-        case profileImageURL = "profile_image"
-    }
-}
-
-private struct ProfileImageURL: Codable {
-    var smallImage: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case smallImage = "small"
     }
 }
 
@@ -36,7 +26,6 @@ struct Profile {
     var name: String?
     var loginName: String?
     var bio: String?
-    var imageURL: String?
 }
 
 enum ProfileServiceError: Error {
@@ -52,9 +41,7 @@ final class ProfileService {
     private(set) var profile: Profile?
     
     private func createURLRequest(_ code: String) -> URLRequest? {
-        let baseURLString = "https://api.unsplash.com"
-        let finalURLString = URL(string: baseURLString + "/me")
-        guard let url = finalURLString else {return nil}
+        guard let url = Constants.finaAPIlURLString else {return nil}
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(code)", forHTTPHeaderField: "Authorization")
@@ -96,7 +83,7 @@ final class ProfileService {
                 self.profile = Profile(username: profileRes.userName ?? "",
                                        name: (profileRes.firstName ?? "") + " " + (profileRes.lastName ?? ""),
                                        loginName: "@" + (profileRes.userName ?? ""),
-                                       bio: profileRes.bio ?? "") //, imageURL: imageTrueURL)
+                                       bio: profileRes.bio ?? "")
                 guard let profile = self.profile else { return }
                 handler(.success(profile))
             case .failure(let error):

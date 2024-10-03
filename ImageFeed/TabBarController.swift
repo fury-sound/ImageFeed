@@ -12,7 +12,11 @@ final class TabBarController: UITabBarController {
     override func awakeFromNib() {
         super.awakeFromNib()
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "NavigationViewController")
+        let imagesListViewController = storyboard.instantiateViewController(withIdentifier: "ImagesListViewController")
+        imagesListViewController.tabBarItem = UITabBarItem(
+            title: "",
+            image: UIImage(named: "ActiveImage"),
+            selectedImage: nil)
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = UITabBarItem(
             title: "",

@@ -75,8 +75,7 @@ final class ProfileImageService {
 
     
     private func createImageRequest(_ code: String, _ username: String) -> URLRequest? {
-        let baseURLString = "https://api.unsplash.com"
-        let finalURLString = URL(string: baseURLString + "/users/" + username)
+        let finalURLString = URL(string: Constants.baseAPIURLString + "/users/" + username)
         guard let url = finalURLString else {return nil}
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

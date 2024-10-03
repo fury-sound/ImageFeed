@@ -25,10 +25,8 @@ final class OAuth2Service {
     private init() {}
     
     private func createURLRequest(_ code: String) -> URLRequest? {
-        let baseURLString = "https://unsplash.com"
-        let finalURLString = baseURLString + "/oauth/token"
         
-        guard var urlComponents = URLComponents(string: finalURLString) else {
+        guard var urlComponents = URLComponents(string: Constants.finalURLString) else {
             debugPrint("Error in creating URL string for authorization request: createURLRequest -> OAuth2Service")
             return nil
         }
@@ -83,4 +81,5 @@ final class OAuth2Service {
         self.task = task
         task.resume()
     }
+    
 }

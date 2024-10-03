@@ -61,32 +61,25 @@ final class SplashViewController: UIViewController {
     }
 }
 
-extension SplashViewController: AuthViewControllerDelegate {
+extension SplashViewController: AuthViewControllerDelegate {    
     
-    func didAuthenticate(_ vc: AuthViewController) {
-        vc.presentingViewController?.dismiss(animated: true) { [weak self] in
-            guard let self else {
-                debugPrint("error with self in didAuthenticate -> splashVC")
-                return
-            }
-            windowCall(1)
-        }
+    func didAuthenticate(_ vc: AuthViewController, success: Bool) {
+        if success {
+            vc.presentingViewController?.dismiss(animated: true) { [weak self] in
+                guard let self else {
+                    debugPrint("error with self in didAuthenticate -> splashVC")
+                    return
+                }
+                windowCall(1)
+            }} else {
+                vc.presentingViewController?.dismiss(animated: true) { [weak self] in
+                    guard let self else {
+                        debugPrint("error with self in didAuthenticate -> splashVC")
+                        return
+                    }
+                    self.authErrorAlert()
+                }}
     }
-    
-//    private func showSplashVC() {
-//        view.backgroundColor = .ypBlack
-//        let logoImage = UIImage(named: "Logo_of_Unsplash")
-//        let logoImageView = UIImageView(image: logoImage)
-//        logoImageView.backgroundColor = .clear
-//        view.addSubview(logoImageView)
-//        logoImageView.translatesAutoresizingMaskIntoConstraints = false
-//        NSLayoutConstraint.activate([
-//            logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-//            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            logoImageView.heightAnchor.constraint(equalToConstant: 60),
-//            logoImageView.widthAnchor.constraint(equalToConstant: 60)
-//        ])
-//    }
     
     private func fetchProfileInSplashVC(_ token: String) {
         var routeInt = 0
@@ -126,12 +119,9 @@ extension SplashViewController: AuthViewControllerDelegate {
     }
     
     private func switchToAuthViewController() {
-        guard let window = UIApplication.shared.windows.first else {
-            assertionFailure("Invalid windows configuration")
-            return
-        }
         
-        guard let authViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "AuthViewController") as? AuthViewController else {return}
+        guard let authViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {return}
+        
         authViewController.makeDelegate(self)
         authViewController.modalPresentationStyle = .fullScreen
         authViewController.modalTransitionStyle = .crossDissolve
@@ -150,4 +140,36 @@ extension SplashViewController: AuthViewControllerDelegate {
         tabBarController.modalPresentationStyle = .fullScreen
         window.rootViewController = tabBarController
     }
+    
+    private func authErrorAlert() {
+        let alertText = "OK"
+        let alertTitle = "Что-то пошло не так ((("
+        let alertMessage = "Не удалось войти в систему"
+
+        let alert = UIAlertController(
+            /// заголовок всплывающего окна
+            title: alertTitle,
+            /// текст во всплывающем окне
+            message:  alertMessage,
+            /// preferredStyle может быть .alert или .actionSheet
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: alertText, style: .default) { _ in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(action)
+        
+        guard let rootVC = UIApplication.shared.windows[0].rootViewController else { return }
+        if var topController = rootVC.presentedViewController {
+            while let presented = topController.presentedViewController {
+                topController = presented
+            }
+            topController.present(alert, animated: true)
+            return
+        }
+        rootVC.present(alert, animated: true)
+    }
+
+    
 }

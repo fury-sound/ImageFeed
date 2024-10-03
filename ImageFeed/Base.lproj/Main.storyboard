@@ -205,14 +205,8 @@
                                     <constraint firstAttribute="height" constant="48" id="Sok-4g-r6B"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain">
-                                    <attributedString key="attributedTitle">
-                                        <fragment content="Войти">
-                                            <attributes>
-                                                <font key="NSFont" size="17" name="SFPro-Bold"/>
-                                            </attributes>
-                                        </fragment>
-                                    </attributedString>
+                                <buttonConfiguration key="configuration" style="plain" title="Войти">
+                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
                                     <color key="baseForegroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="calibratedRGB"/>
                                 </buttonConfiguration>
                                 <userDefinedRuntimeAttributes>
@@ -227,7 +221,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="TLn-Gd-1eT"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="5np-94-UvM" firstAttribute="centerY" secondItem="ikE-Xe-CHh" secondAttribute="centerY" id="94F-Tr-k2X"/>
                             <constraint firstAttribute="bottom" secondItem="SQn-Ee-QJo" secondAttribute="bottom" constant="137" id="Ur5-Eu-j7f"/>
@@ -274,8 +268,8 @@
                             <constraint firstItem="4e7-Cf-YbF" firstAttribute="top" secondItem="Kjv-12-jaY" secondAttribute="top" id="IjT-BH-FNP"/>
                             <constraint firstItem="zTI-JH-LLZ" firstAttribute="leading" secondItem="QT2-bT-V1h" secondAttribute="leading" id="NAE-Xt-HJZ"/>
                             <constraint firstAttribute="trailing" secondItem="zTI-JH-LLZ" secondAttribute="trailing" id="RJ9-Uc-mrK"/>
-                            <constraint firstItem="Kjv-12-jaY" firstAttribute="bottom" secondItem="zTI-JH-LLZ" secondAttribute="bottom" id="oRI-QY-2GN"/>
-                            <constraint firstItem="zTI-JH-LLZ" firstAttribute="top" secondItem="Kjv-12-jaY" secondAttribute="top" id="pTl-fx-HCB"/>
+                            <constraint firstAttribute="bottom" secondItem="zTI-JH-LLZ" secondAttribute="bottom" id="oRI-QY-2GN"/>
+                            <constraint firstItem="zTI-JH-LLZ" firstAttribute="top" secondItem="QT2-bT-V1h" secondAttribute="top" id="pTl-fx-HCB"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="uqV-vx-9YS"/>
@@ -311,7 +305,7 @@
                 <navigationController storyboardIdentifier="NavigationViewController" automaticallyAdjustsScrollViewInsets="NO" id="xBo-lK-Br0" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="Active 1" id="uoq-zz-k03"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="mi0-i6-QCA">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" id="mi0-i6-QCA">
                         <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
