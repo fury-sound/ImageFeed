@@ -15,12 +15,11 @@ final class SplashViewController: UIViewController {
         
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        guard let token = oauth2TokenStorage.token else {
-            debugPrint("no token: viewDidAppear -> splashVC")
+        if let token = oauth2TokenStorage.token, !token.isEmpty {
+            windowCall(1)
+        } else {
             switchToAuthViewController()
-            return
         }
-        windowCall(1)
     }
     
     

@@ -121,7 +121,7 @@ final class ProfileViewController: UIViewController {
         // checking if bearerToken was removed
         let keyValue = "bearerToken"
         let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
-        guard let isSuccess else {
+        guard isSuccess != nil else {
             debugPrint("token value is nil: isSuccess -> ProfileViewController")
             return
         }

@@ -16,7 +16,7 @@ final class OAuth2TokenStorage {
     
     var token: String? {
         get {
-            storage.string(forKey: Keys.bearerToken.rawValue) //?? ""
+            storage.string(forKey: Keys.bearerToken.rawValue)
         }
         set {
             storage.set(newValue ?? "", forKey: Keys.bearerToken.rawValue)
