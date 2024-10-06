@@ -7,6 +7,6 @@
 
 import UIKit
 
-protocol AuthViewControllerDelegate {
-    func didAuthenticate(_ vc: AuthViewController)
+protocol AuthViewControllerDelegate: AnyObject {
+    func didAuthenticate(_ vc: AuthViewController, success: Bool)
 }

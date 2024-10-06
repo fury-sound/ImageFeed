@@ -48,7 +48,7 @@ extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
-            print("Failed cell typecast to ImagesListCell; table cells are empty")
+            debugPrint("Failed cell typecast to ImagesListCell; table cells are empty")
             return UITableViewCell()
         }
         

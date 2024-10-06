@@ -6,22 +6,58 @@
 //
 
 import UIKit
+import Kingfisher
+import SwiftKeychainWrapper
 
 final class ProfileViewController: UIViewController {
     
     var delegate = SplashViewController()
     private var oauth2TokenStorage = OAuth2TokenStorage()
-  
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    
+    private var nameLabel = UILabel()
+    private var loginNameLabel = UILabel()
+    private var descriptionLabel = UILabel()
+    private var profileImage = UIImage(named: "Ekat_nov")
+    private var imageView = UIImageView()
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else {
+                debugPrint("no self in viewDidLoad -> ProfileViewController")
+                return }
+            self.updateAvatar()
+        }
         view.backgroundColor = UIColor(red: 26/255.0, green: 27/255.0, blue: 34/255.0, alpha: 1)
         profileSetup()
     }
     
+    private func updateAvatar() {
+        guard
+            let profileImageURL = profileImageService.avatarURL,
+            let url = URL(string: profileImageURL)
+        else {
+            debugPrint("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
+            return
+        }
+        let processor = RoundCornerImageProcessor(cornerRadius: 36, backgroundColor: .clear)
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: url,
+                              options: [
+                                .processor(processor),
+                                .cacheSerializer(FormatIndicatedCacheSerializer.png)
+                              ])
+    }
+    
     private func profileSetup() {
-        
-        let profileImage = UIImage(named: "Ekat_nov")
-        let imageView = UIImageView(image: profileImage)
         view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
@@ -38,58 +74,70 @@ final class ProfileViewController: UIViewController {
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         arrowButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
         
-        let labelName = UILabel()
-        labelName.text = "Екатерина Новикова"
-        labelName.font = UIFont(name: "SFPro-Bold", size: 23)
-        labelName.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = ""
+        nameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
+        nameLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         
-        view.addSubview(labelName)
-        labelName.translatesAutoresizingMaskIntoConstraints = false
-        labelName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelName.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
+        view.addSubview(nameLabel)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
         
-        let labelTG = UILabel()
-        labelTG.text = "@ekaterina_nov"
-        labelTG.font = UIFont(name: "SF Pro", size: 13)
-        labelTG.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
+        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.text = ""
+        loginNameLabel.font = UIFont(name: "SF Pro", size: 13)
+        loginNameLabel.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
         
-        view.addSubview(labelTG)
-        labelTG.translatesAutoresizingMaskIntoConstraints = false
-        labelTG.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelTG.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 8).isActive = true
-
-        let labelPhrase = UILabel()
-        labelPhrase.text = "Hello, world!"
-        labelPhrase.font = UIFont(name: "SF Pro", size: 13)
-        labelPhrase.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        view.addSubview(loginNameLabel)
+        loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
         
-        view.addSubview(labelPhrase)
-        labelPhrase.translatesAutoresizingMaskIntoConstraints = false
-        labelPhrase.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        labelPhrase.topAnchor.constraint(equalTo: labelTG.bottomAnchor, constant: 8).isActive = true
+        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = ""
+        descriptionLabel.font = UIFont(name: "SF Pro", size: 13)
+        descriptionLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        
+        view.addSubview(descriptionLabel)
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8).isActive = true
+        
+        guard let profile = profileService.profile else {return}
+        updateProfileDetails(profile: profile)
         
     }
     
+    private func updateProfileDetails(profile: Profile) {        
+        nameLabel.text = (profile.name != nil) ? profile.name : "Екатерина Новикова"
+        loginNameLabel.text = (profile.loginName != nil) ? profile.loginName : "@ekaterina_nov"
+        descriptionLabel.text = (profile.bio != nil) ? profile.bio : "Hello, world!"
+        updateAvatar()
+    }
+    
     // temporary function to clean all UserDefaults values
-    private func cleanUserDefaults() {
-        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        allValues.keys.forEach { key in
-            UserDefaults.standard.removeObject(forKey: key)
+    private func checkIfTokenIsRemoved() {
+        // checking if bearerToken was removed
+        let keyValue = "bearerToken"
+        let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
+        guard isSuccess != nil else {
+            debugPrint("token value is nil: isSuccess -> ProfileViewController")
+            return
         }
-//        let keyValue = "bearerToken"
-//        print("value \(UserDefaults.standard.string(forKey: keyValue))")
     }
     
     // logout button function
     @objc private func logoutAction() {
         oauth2TokenStorage.token = ""
-//        cleanUserDefaults() // calling temporary function
+        let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
+        //        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
             return
         }
-        let splashViewController = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "SplashViewVC")
+        let splashViewController = SplashViewController()
         splashViewController.modalTransitionStyle = .crossDissolve
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController
