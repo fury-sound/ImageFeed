@@ -57,7 +57,8 @@ extension URLSession {
                     let response = try decoder.decode(T.self, from: info)
                     completion(.success(response))
                 } catch(let error) {
-                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
+                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription)")
+//                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):

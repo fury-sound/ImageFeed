@@ -132,6 +132,7 @@ extension SplashViewController: AuthViewControllerDelegate {
             assertionFailure("Invalid windows configuration")
             return
         }
+        print("current token:", oauth2TokenStorage.token)
         let tabBarController = TabBarController()
         tabBarController.awakeFromNib()
         tabBarController.tabBar.barTintColor = .clear
