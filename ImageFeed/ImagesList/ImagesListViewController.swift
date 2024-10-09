@@ -13,10 +13,11 @@ final class ImagesListViewController: UIViewController {
     var imageListCellVC = ImagesListCell()
     private let photosName : [String] = Array(0..<20).map{"\($0)"}
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let imagesListService = ImagesListService.shared
+    //    private let imagesListService = ImagesListService.shared
+    private let delegateImagesListService = ImagesListService()
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +38,7 @@ final class ImagesListViewController: UIViewController {
     
     func updatePhotos() {
         print("in updatePhotos -> ImagesListViewController")
-//        print(imagesListService.photos.description)
+        //        print(imagesListService.photos.description)
     }
     
     
@@ -68,22 +69,23 @@ extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         print("1. in tableView")
-//        print(indexPath.row, imagesListService.photos.count)
-//        print(indexPath.row == imagesListService.photos.count)
-//        if indexPath.row + 1 == imagesListService.photos.count {
-            print("2. in if in tableView")
-
-            guard let token = oauth2TokenStorage.token else {return}
-            imagesListService.fetchPhotosNextPage(token) { handler in
-                switch handler {
-                case .success:
-                    print("success in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController")
-                case .failure(let error):
-                    debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
-                    return
-                }
+        //        print(indexPath.row, imagesListService.photos.count)
+        //        print(indexPath.row == imagesListService.photos.count)
+        //        if indexPath.row + 1 == imagesListService.photos.count {
+        print("2. in if in tableView")
+        
+        guard let token = oauth2TokenStorage.token else {return}
+        //            imagesListService.fetchPhotosNextPage(token) { handler in
+        delegateImagesListService.fetchPhotosNextPage(token) { handler in
+            switch handler {
+            case .success:
+                print("success in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController")
+            case .failure(let error):
+                debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
+                return
             }
-//        }
+        }
+        //        }
     }
     
     

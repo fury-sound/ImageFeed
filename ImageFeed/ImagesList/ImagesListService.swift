@@ -56,8 +56,8 @@ struct UrlsResult: Codable {
 }
 
 final class ImagesListService {
-    static let shared = ImagesListService()
-    private init() {}
+//    static let shared = ImagesListService()
+//    private init() {}
     private var lastLoadedPage: Int?
     private(set) var photos: [Photo] = []
     private let urlSession = URLSession.shared
