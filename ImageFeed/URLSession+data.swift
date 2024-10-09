@@ -54,11 +54,14 @@ extension URLSession {
             switch result {
             case .success(let info):
                 do {
+//                    print("1. in do, \(T.self)")
                     let response = try decoder.decode(T.self, from: info)
+//                    print("2. in do")
                     completion(.success(response))
                 } catch(let error) {
-                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription)")
-//                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription). \n Data: \(String(data: info, encoding: .utf8) ?? "")")
+//                    print("3. in catch -> error")
+//                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription)")
+                    debugPrint("URLSession-objectTask(): Cannot decode JSON \(error.localizedDescription). \("\n") Data: \(String(data: info, encoding: .utf8) ?? "")")
                     completion(.failure(error))
                 }
             case .failure(let error):

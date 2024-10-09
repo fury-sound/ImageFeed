@@ -12,27 +12,27 @@ enum ImageServiceError: Error {
 }
 
 struct Photo {
-    let id: String
-    let size: CGSize
+    let id: String?
+    let size: CGSize?
     let createdAt: Date?
     let welcomeDescription: String?
-    let thumbImageURL: String
-    let largeImageURL: String
-    let isLiked: Bool
+    let thumbImageURL: String?
+    let largeImageURL: String?
+    let isLiked: Bool?
 }
 
-struct PhotoUnsplash {
+struct PhotoUnsplash: Codable {
     let allPhotos: PhotoResult
 }
 
 struct PhotoResult: Codable {
-    let id: String
-    let width: Int
-    let height: Int
-    let createdAt: Date?
+    let id: String?
+    let width: Int?
+    let height: Int?
+    let createdAt: String?
     let welcomeDescription: String?
-    let isLiked: Bool
-    let urlsResult: UrlsResult
+    let isLiked: Bool?
+    let urlsResult: UrlsResult?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -65,6 +65,7 @@ final class ImagesListService {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private var photo: Photo?
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
+    private let dataFormatter = ISO8601DateFormatter()
 
     
     func fetchPhotosNextPage(_ token: String, _ handler: @escaping (Result<String, Error>) -> Void) {
@@ -90,6 +91,7 @@ final class ImagesListService {
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult],Error>) in
+            print("in task")
             guard let self else { return }
             switch result {
             case .success(let photoResult):
@@ -103,14 +105,14 @@ final class ImagesListService {
 //                                              urlsResult: imageInfo.urlsResult)
                 for i in photoResult {
                     self.photo = Photo(id: i.id,
-                                       size: CGSize(width: i.width, height: i.height),
-                                       createdAt: i.createdAt,
-                                       welcomeDescription: i.welcomeDescription,
-                                       thumbImageURL: i.urlsResult.thumbImageURL ?? "",
-                                       largeImageURL: i.urlsResult.largeImageURL ?? "",
-                                       isLiked: i.isLiked)
+                                       size: CGSize(width: i.width ?? 0, height: i.height ?? 0),
+                                       createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? Date(),
+                                       welcomeDescription: i.welcomeDescription ?? "",
+                                       thumbImageURL: i.urlsResult?.thumbImageURL ?? "",
+                                       largeImageURL: i.urlsResult?.largeImageURL ?? "",
+                                       isLiked: i.isLiked ?? false)
+//                    print("photo:", photo)
                 }
-//                avatarURL = info.profileImage?.actualUserImage
                 guard let photo else {return}
                 photos.append(photo)
 //                handler(.success(photo))
