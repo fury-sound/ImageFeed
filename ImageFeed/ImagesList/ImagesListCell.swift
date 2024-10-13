@@ -33,6 +33,7 @@ final class ImagesListCell: UITableViewCell {
         if self.imageCellView.layer.sublayers?.count != nil  {
             self.imageCellView.layer.sublayers?.removeAll()
         }
+        imageCellView.kf.cancelDownloadTask()
     }
     
     func configCell(in tableView: UITableView, for cell: ImagesListCell, with indexPath: IndexPath) {

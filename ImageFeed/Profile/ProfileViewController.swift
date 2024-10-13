@@ -26,6 +26,7 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        checkIfTokenIsRemoved()
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
@@ -119,6 +120,7 @@ final class ProfileViewController: UIViewController {
     // temporary function to clean all UserDefaults values
     private func checkIfTokenIsRemoved() {
         // checking if bearerToken was removed
+//        oauth2TokenStorage.token = ""
         let keyValue = "bearerToken"
         let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
         guard isSuccess != nil else {
@@ -130,8 +132,9 @@ final class ProfileViewController: UIViewController {
     // logout button function
     @objc private func logoutAction() {
         oauth2TokenStorage.token = ""
+        
         let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-        //        checkIfTokenIsRemoved() // calling temporary function
+//        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")

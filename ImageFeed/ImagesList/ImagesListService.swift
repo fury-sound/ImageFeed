@@ -68,9 +68,11 @@ final class ImagesListService {
     private let dataFormatter = ISO8601DateFormatter()
 
     
-    func fetchPhotosNextPage(_ token: String, _ handler: @escaping (Result<String, Error>) -> Void) {
+    func fetchPhotosNextPage(handler: @escaping (Result<[Photo], Error>) -> Void) {
         // Здесь получим страницу номер 1, если ещё не загружали ничего,
         // и следующую страницу (на единицу больше), если есть предыдущая загруженная страница
+//        guard let token = oauth2TokenStorage.token else { return }
+        
         let nextPage = (lastLoadedPage ?? 0) + 1
         assert(Thread.isMainThread)
         print("Thread.isMainThread: \(Thread.isMainThread)")
@@ -111,11 +113,10 @@ final class ImagesListService {
                                        thumbImageURL: i.urlsResult?.thumbImageURL ?? "",
                                        largeImageURL: i.urlsResult?.largeImageURL ?? "",
                                        isLiked: i.isLiked ?? false)
-//                    print("photo:", photo)
+                    guard let photo else {return}
+                    photos.append(photo)
                 }
-                guard let photo else {return}
-                photos.append(photo)
-//                handler(.success(photo))
+                handler(.success(photos))
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self,
@@ -149,14 +150,12 @@ final class ImagesListService {
     
     private func createImageRequest(_ token: String, _ pageNumber: Int) -> URLRequest? {
         var urlComponents = URLComponents()
-//        urlComponents.scheme = "https"
         urlComponents.queryItems = [
             URLQueryItem(name: "page", value: "\(pageNumber)"),
             URLQueryItem(name: "per_page", value: "10"),
         ]
         let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
         print("url: \(urlString)")
-//        let finalURLString = URL(string: Constants.baseAPIURLString + "/photos/")
         let finalURLString = URL(string: urlString)
         guard let url = finalURLString else {return nil}
         var request = URLRequest(url: url)
