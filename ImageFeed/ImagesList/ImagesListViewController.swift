@@ -116,7 +116,7 @@ extension ImagesListViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        print("1. in tableView")
+        print("in tableView - row \(indexPath.row)")
 
         if indexPath.row == photos.count - 1 {
             callFetchPhotos()
@@ -138,12 +138,19 @@ extension ImagesListViewController: UITableViewDataSource {
             debugPrint("No url for image in thumbImageImageURL \(String(describing: photos[indexPath.row].thumbImageURL))")
             return UITableViewCell()
         }
-        imageListCell.imageView?.kf.indicatorType = .activity
-        imageListCell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble) { _ in
-//        tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
+        
+//        imageListCell.imageView?.kf.indicatorType = .activity
+//        imageListCell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
+//        { [weak self] _ in
+//            guard let self else {return}
+            let actualRowHeight = self.tableView.rowHeight
+//            let image = imageListCell.imageView?.image
+//            self.imageListCellVC.configCell(in: tableView, for: imageListCell, with: indexPath)
+//            self.tableView.rowHeight = self.imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell)
+            tableView.rowHeight = self.imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell, url: url)
+//        }
     
-        imageListCellVC.configCell(in: tableView, for: imageListCell, with: indexPath)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
         return imageListCell
     }
     

@@ -5,8 +5,8 @@
 //  Created by Valery Zvonarev on 07.08.2024.
 //
 
-import Foundation
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -26,6 +26,13 @@ final class ImagesListCell: UITableViewCell {
         return formatter
     }()
 
+//    override func didMoveToWindow() {
+//        super.didMoveToWindow()
+//        
+//    }
+    
+//    private func gradientSetup() {}
+    
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -36,7 +43,62 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.kf.cancelDownloadTask()
     }
     
-    func configCell(in tableView: UITableView, for cell: ImagesListCell, with indexPath: IndexPath) {
+    func configCell(rowHeight: CGFloat, cell: ImagesListCell, url: URL) -> CGFloat {
+        let imageHeartFilled = UIImage(named: "Active")
+        let imageHeartEmpty = UIImage(named: "No Active")
+        var actualImageHeight: CGFloat = 0.0
+        print("Сell \(cell.description)")
+//        cell.selectionStyle = .none
+        
+        // высота ячейки задается через tableView.rowHeight, а не через метод делегата heightForRowAt
+//        let rowNumber = indexPath.row
+//        let imageName = "\(rowNumber)"
+//        let imageName = "\(rowNumber)"
+        cell.imageView?.kf.indicatorType = .activity
+        cell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
+        if let currentImage = imageCellView.image {
+//            cell.imageCellView.image = currentImage
+            let heightImage = currentImage.size.height
+            let widthImage = currentImage.size.width
+            let widthView = cell.imageCellView.frame.size.width
+            actualImageHeight = (heightImage * widthView) / widthImage
+//            tableView.rowHeight = actualImageHeight
+        } else {
+            debugPrint("No image exists")
+            return 0
+        }
+        
+        
+        // создание и настройка фрейма градиента: цвета, расположение, добавление подслоем
+        let gradient = CAGradientLayer()
+        let start = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.0)
+        let end = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.2)
+        gradient.colors = [start.cgColor, end.cgColor]
+        gradient.locations = [0, 0.3]
+        let y_point = rowHeight - 8
+        let gradientHeight: CGFloat = 30.0 // значение высоты фрейма градиента в Figma
+        gradient.frame = CGRect(x: 0, y: y_point, width: cell.imageCellView.bounds.size.width, height: -(gradientHeight))
+        cell.imageCellView.layer.addSublayer(gradient)
+        
+        //размещение строки с текущей датой
+        let curDate: Date
+        if #available(iOS 15.0, *) {
+            curDate = Date.now
+        } else {
+            curDate = Date()
+        }
+        cell.dateCellView.text = "\(dateFormatter.string(from: curDate))"
+        
+        // размещение изображений для кнопки - нечет белые, чет красные
+        let isHeartFilled = Int(rowHeight) % 2 == 0
+        let heartImage = isHeartFilled ? imageHeartFilled : imageHeartEmpty
+        cell.buttonCellView.setImage(heartImage, for: .normal)
+        
+        return actualImageHeight
+    }
+    
+    
+    func configCell_old(in tableView: UITableView, for cell: ImagesListCell, with indexPath: IndexPath) {
         let imageHeartFilled = UIImage(named: "Active")
         let imageHeartEmpty = UIImage(named: "No Active")
         var actualImageHeight: CGFloat = 0.0
@@ -44,7 +106,9 @@ final class ImagesListCell: UITableViewCell {
         
         // высота ячейки задается через tableView.rowHeight, а не через метод делегата heightForRowAt
         let rowNumber = indexPath.row
+//        let imageName = "\(rowNumber)"
         let imageName = "\(rowNumber)"
+        
         if let currentImage = UIImage(named: imageName) {
             cell.imageCellView.image = currentImage
             let heightImage = currentImage.size.height
@@ -56,6 +120,7 @@ final class ImagesListCell: UITableViewCell {
             debugPrint("No such image \(indexPath.row) exists")
             return
         }
+        
         
         // создание и настройка фрейма градиента: цвета, расположение, добавление подслоем
         let gradient = CAGradientLayer()
