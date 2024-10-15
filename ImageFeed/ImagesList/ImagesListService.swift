@@ -107,7 +107,7 @@ final class ImagesListService {
 //                                              urlsResult: imageInfo.urlsResult)
                 for i in photoResult {
                     self.photo = Photo(id: i.id,
-                                       size: CGSize(width: i.width ?? 0, height: i.height ?? 0),
+                                       size: CGSize(width: Double(i.width ?? 0), height: Double(i.height ?? 0)),
                                        createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? Date(),
                                        welcomeDescription: i.welcomeDescription ?? "",
                                        thumbImageURL: i.urlsResult?.thumbImageURL ?? "",

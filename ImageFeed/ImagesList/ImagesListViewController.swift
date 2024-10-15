@@ -22,8 +22,8 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rowHeight = 200
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+//        tableView.rowHeight = 200
+//        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
        
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: ImagesListService.didChangeNotification,
@@ -116,7 +116,7 @@ extension ImagesListViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        print("in tableView - row \(indexPath.row)")
+//        print("in tableView - row \(indexPath.row)")
 
         if indexPath.row == photos.count - 1 {
             callFetchPhotos()
@@ -139,15 +139,15 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-//        imageListCell.imageView?.kf.indicatorType = .activity
-//        imageListCell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
+        imageListCell.imageView?.kf.indicatorType = .activity
+        imageListCell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
 //        { [weak self] _ in
 //            guard let self else {return}
             let actualRowHeight = self.tableView.rowHeight
 //            let image = imageListCell.imageView?.image
 //            self.imageListCellVC.configCell(in: tableView, for: imageListCell, with: indexPath)
 //            self.tableView.rowHeight = self.imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell)
-            tableView.rowHeight = self.imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell, url: url)
+        imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell, url: url, indexPath: indexPath)
 //        }
     
         tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -156,6 +156,21 @@ extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photos.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let heightImage = imagesListService.photos[indexPath.row].size?.height,
+              let widthImage = imagesListService.photos[indexPath.row].size?.width
+        else {return 0}
+        print(heightImage, widthImage)
+        let tableImageSize = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageCellWidth = tableView.bounds.width - tableImageSize.left - tableImageSize.right
+        print(tableView.bounds.width, tableImageSize.left, tableImageSize.right)
+        let actualWidth = imageCellWidth / widthImage
+        print(actualWidth)
+        let imageCellHeight = (heightImage * actualWidth) + tableImageSize.top + tableImageSize.bottom
+        print(imageCellHeight)
+        return imageCellHeight
     }
 }
 
