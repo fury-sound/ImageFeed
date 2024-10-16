@@ -12,19 +12,16 @@ final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
     var imageListCellVC = ImagesListCell()
-//    private let photosName : [String] = Array(0..<20).map{"\($0)"}
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
     var photos: [Photo] = []
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        tableView.rowHeight = 200
-//        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-       
+        callFetchPhotos()
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: ImagesListService.didChangeNotification,
             object: nil,
@@ -35,29 +32,27 @@ final class ImagesListViewController: UIViewController {
                 return }
             self.updateTableViewAnimated()
         }
-        
-        callFetchPhotos()
-//        tableView.reloadData()
-//        updateTableViewAnimated()
     }
     
     
     func updateTableViewAnimated() {
         print("in updatePhotos -> ImagesListViewController")
-//        let oldCount = photos.count
-//        let newCount = imagesListService.photos.count
-//        photos = imagesListService.photos
-//        if oldCount != newCount {
-//            tableView.performBatchUpdates {
-//                let indexPaths = (oldCount..<newCount).map { i in
-//                    IndexPath(row: i, section: 0)
-//                }
-//                tableView.insertRows(at: indexPaths, with: .automatic)
-//            } completion: { _ in }
-//        }
-        photos += imagesListService.photos
-        tableView.reloadData()
-//        print(imagesListService.photos.description)
+        //        let oldCount = photos.count
+        //        let newCount = imagesListService.photos.count
+        //        photos = imagesListService.photos
+        //        if oldCount != newCount {
+        //            tableView.performBatchUpdates {
+        //                let indexPaths = (oldCount..<newCount).map { i in
+        //                    IndexPath(row: i, section: 0)
+        //                }
+        //                tableView.insertRows(at: indexPaths, with: .automatic)
+        //            } completion: { _ in }
+        //        }
+        DispatchQueue.main.async {
+            //            self.photos += self.imagesListService.photos
+            self.tableView.reloadData()
+        }
+        //        print(imagesListService.photos.description)
     }
     
     
@@ -70,19 +65,6 @@ final class ImagesListViewController: UIViewController {
                 assertionFailure("Invalid seque destination")
                 return
             }
-//            guard
-//                let largeImageImageURL = photos[indexPath.row].largeImageURL,
-//                let url = URL(string: largeImageImageURL)
-//            else {
-//                debugPrint("No url for image in thumbImageImageURL \(String(describing: photos[indexPath.row].largeImageURL))")
-//                return
-//            }
-//            viewController.imageView?.kf.indicatorType = .activity
-//            viewController.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble) { _ in
-//            }
-            
-//            let image = UIImage(named: photosName[indexPath.row])
-//            viewController.image = image
             viewController.image = UIImage()
         } else {
             super.prepare(for: segue, sender: sender)
@@ -97,14 +79,15 @@ extension ImagesListViewController: UITableViewDelegate {
 }
 
 extension ImagesListViewController: UITableViewDataSource {
-
+    
     func callFetchPhotos() {
         imagesListService.fetchPhotosNextPage() { handler in
             switch handler {
             case .success(let photos):
-                print("success in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController")
-                self.photos += photos
+                //                print("2. photos count in callFetchPhotos \(photos.count)")
+                //                print("success in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController")
                 DispatchQueue.main.async {
+                    self.photos += photos
                     self.tableView.reloadData()
                 }
             case .failure(let error):
@@ -116,8 +99,8 @@ extension ImagesListViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        print("in tableView - row \(indexPath.row)")
-
+        //        print("in tableView - row \(indexPath.row)")
+        print("4. photos count in willDisplay \(indexPath.row) \(photos.count)")
         if indexPath.row == photos.count - 1 {
             callFetchPhotos()
         }
@@ -125,32 +108,28 @@ extension ImagesListViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-                
+        
         guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             debugPrint("Failed cell typecast to ImagesListCell; table cells are empty")
             return UITableViewCell()
         }
         
         guard
-            let thumbImageImageURL = photos[indexPath.row].thumbImageURL,
-            let url = URL(string: thumbImageImageURL)
+            let thumbImageURL = photos[indexPath.row].thumbImageURL,
+            let url = URL(string: thumbImageURL)
         else {
             debugPrint("No url for image in thumbImageImageURL \(String(describing: photos[indexPath.row].thumbImageURL))")
             return UITableViewCell()
         }
         
-        imageListCell.imageView?.kf.indicatorType = .activity
-        imageListCell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
-//        { [weak self] _ in
-//            guard let self else {return}
+        imageListCell.imageCellView.kf.indicatorType = .activity
+        imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
+            guard let self else {return}
             let actualRowHeight = self.tableView.rowHeight
-//            let image = imageListCell.imageView?.image
-//            self.imageListCellVC.configCell(in: tableView, for: imageListCell, with: indexPath)
-//            self.tableView.rowHeight = self.imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell)
-        imageListCellVC.configCell(rowHeight: actualRowHeight, cell: imageListCell, url: url, indexPath: indexPath)
-//        }
-    
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath)
+        }
+        
+//        tableView.reloadRows(at: [indexPath], with: .automatic)
         return imageListCell
     }
     
@@ -159,17 +138,15 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        print("3. photos count in heightForRowAt \(photos.count) \(indexPath.row)")
+        
         guard let heightImage = imagesListService.photos[indexPath.row].size?.height,
               let widthImage = imagesListService.photos[indexPath.row].size?.width
         else {return 0}
-        print(heightImage, widthImage)
         let tableImageSize = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageCellWidth = tableView.bounds.width - tableImageSize.left - tableImageSize.right
-        print(tableView.bounds.width, tableImageSize.left, tableImageSize.right)
         let actualWidth = imageCellWidth / widthImage
-        print(actualWidth)
         let imageCellHeight = (heightImage * actualWidth) + tableImageSize.top + tableImageSize.bottom
-        print(imageCellHeight)
         return imageCellHeight
     }
 }

@@ -73,7 +73,6 @@ final class ImagesListService {
         // и следующую страницу (на единицу больше), если есть предыдущая загруженная страница
 //        guard let token = oauth2TokenStorage.token else { return }
         
-        let nextPage = (lastLoadedPage ?? 0) + 1
         assert(Thread.isMainThread)
         print("Thread.isMainThread: \(Thread.isMainThread)")
         
@@ -81,6 +80,7 @@ final class ImagesListService {
             task?.cancel()
         }
         
+        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         guard let token = oauth2TokenStorage.token else {
             handler(.failure(ImageServiceError.invalidImageListRequest))
             return
@@ -113,9 +113,11 @@ final class ImagesListService {
                                        thumbImageURL: i.urlsResult?.thumbImageURL ?? "",
                                        largeImageURL: i.urlsResult?.largeImageURL ?? "",
                                        isLiked: i.isLiked ?? false)
-                    guard let photo else {return}
+                    guard let photo = self.photo else {return}
                     photos.append(photo)
                 }
+                self.lastLoadedPage = nextPage
+                print("1. photos count in urlSession.objectTask \(photos.count)")
                 handler(.success(photos))
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,

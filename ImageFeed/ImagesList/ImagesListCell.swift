@@ -10,7 +10,7 @@ import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
-    @IBOutlet private weak var imageCellView: UIImageView!
+    @IBOutlet weak var imageCellView: UIImageView!
     
     @IBOutlet private weak var dateCellView: UILabel!
     
@@ -44,19 +44,20 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.kf.cancelDownloadTask()
     }
     
-    func configCell(rowHeight: CGFloat, cell: ImagesListCell, url: URL, indexPath: IndexPath) {
+//    func configCell(rowHeight: CGFloat, cell: ImagesListCell, url: URL, indexPath: IndexPath) {
+    func configCell(rowHeight: CGFloat, url: URL, indexPath: IndexPath) {
         let imageHeartFilled = UIImage(named: "Active")
         let imageHeartEmpty = UIImage(named: "No Active")
 //        var actualImageHeight: CGFloat = 0.0
 //        print("Сell \(cell.description)")
-        cell.selectionStyle = .none
+        self.selectionStyle = .none
         
         // высота ячейки задается через tableView.rowHeight, а не через метод делегата heightForRowAt
         //        let rowNumber = indexPath.row
         //        let imageName = "\(rowNumber)"
         //        let imageName = "\(rowNumber)"
-//        cell.imageView?.kf.indicatorType = .activity
-//        cell.imageView?.kf.setImage(with: url, placeholder: UIImage.scribble)
+//        imageCellView?.kf.indicatorType = .activity
+//        imageCellView?.kf.setImage(with: url, placeholder: UIImage.scribble)
 
 //        guard let imageCellView = cell.imageCellView else {return 0}
 //        if let currentImage = imageCellView.image {
@@ -74,15 +75,15 @@ final class ImagesListCell: UITableViewCell {
 
         
         // создание и настройка фрейма градиента: цвета, расположение, добавление подслоем
-//        let gradient = CAGradientLayer()
-//        let start = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.0)
-//        let end = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.2)
-//        gradient.colors = [start.cgColor, end.cgColor]
-//        gradient.locations = [0, 0.3]
-//        let y_point = rowHeight - 8
-//        let gradientHeight: CGFloat = 30.0 // значение высоты фрейма градиента в Figma
-//        gradient.frame = CGRect(x: 0, y: y_point, width: cell.imageCellView.bounds.size.width, height: -(gradientHeight))
-//        cell.imageCellView.layer.addSublayer(gradient)
+        let gradient = CAGradientLayer()
+        let start = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.0)
+        let end = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.2)
+        gradient.colors = [start.cgColor, end.cgColor]
+        gradient.locations = [0, 0.3]
+        let y_point = rowHeight - 8
+        let gradientHeight: CGFloat = 30.0 // значение высоты фрейма градиента в Figma
+        gradient.frame = CGRect(x: 0, y: y_point, width: self.imageCellView.bounds.size.width, height: -(gradientHeight))
+        self.imageCellView.layer.addSublayer(gradient)
         
         //размещение строки с текущей датой
         let curDate: Date
@@ -91,12 +92,12 @@ final class ImagesListCell: UITableViewCell {
         } else {
             curDate = Date()
         }
-        cell.dateCellView.text = "\(dateFormatter.string(from: curDate))"
+        self.dateCellView.text = "\(dateFormatter.string(from: curDate))"
         
         // размещение изображений для кнопки - нечет белые, чет красные
         let isHeartFilled = Int(rowHeight) % 2 == 0
         let heartImage = isHeartFilled ? imageHeartFilled : imageHeartEmpty
-        cell.buttonCellView.setImage(heartImage, for: .normal)
+        self.buttonCellView.setImage(heartImage, for: .normal)
         
 //        return actualImageHeight
     }
