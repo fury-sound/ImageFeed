@@ -18,11 +18,11 @@ struct Photo {
     let welcomeDescription: String?
     let thumbImageURL: String?
     let largeImageURL: String?
-    let isLiked: Bool?
+    var isLiked: Bool?
 }
 
 struct PhotoUnsplash: Codable {
-    let allPhotos: PhotoResult
+    var anyPhoto: PhotoResult?
 }
 
 struct PhotoResult: Codable {
@@ -31,7 +31,7 @@ struct PhotoResult: Codable {
     let height: Int?
     let createdAt: String?
     let welcomeDescription: String?
-    let isLiked: Bool?
+    var isLiked: Bool?
     let urlsResult: UrlsResult?
     
     enum CodingKeys: String, CodingKey {
@@ -66,15 +66,73 @@ final class ImagesListService {
     private var photo: Photo?
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private let dataFormatter = ISO8601DateFormatter()
-
+    
+    
+    func changeLike(photoId: String?, isLike: Bool?, _ handler: @escaping (Result<Bool, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+//        if task != nil {
+            task?.cancel()
+//        }
+        
+        guard let photoId, let isLike, let token = oauth2TokenStorage.token else {return}
+        
+        guard let request = changeLikeRequest(token, photoId: photoId, isLike: isLike) else {
+            handler(.failure(ImageServiceError.invalidImageListRequest))
+            return
+        }
+        
+        let task = urlSession.objectTask(for: request) { (result: Result<PhotoUnsplash, Error>) in
+            print("in task")
+//            guard let self else { return }
+            self.task = nil
+            switch result {
+            case .success(let photoUnsplash):
+                print("in .success")
+                print("in .success photoUnsplash.allPhotos?.isLiked: \(String(describing: photoUnsplash.anyPhoto?.id))")
+                print("in .success photoUnsplash.allPhotos?.isLiked: \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
+                guard let myPhoto = photoUnsplash.anyPhoto else {
+                    print("No myPhoto")
+                    return
+                }
+                guard let isLike = myPhoto.isLiked else {return}
+                //                let isLike = photoUnsplash.anyPhoto?.isLiked ?? false
+                print("isLike \(isLike) in \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
+                handler(.success(isLike))
+   
+            case .failure(let error):
+                debugPrint("Like symbol error:", error.localizedDescription)
+                handler(.failure(error))
+            }
+        }
+        
+        self.task = task
+        task.resume()
+    }
+    
+    func changeLikeRequest(_ token: String, photoId: String, isLike: Bool) -> URLRequest? {
+        let urlString = Constants.baseAPIURLString + "/photos/" + photoId + "/like"
+//        print("url for Like: \(urlString)")
+        let finalURLString = URL(string: urlString)
+        guard let url = finalURLString else {return nil}
+        var request = URLRequest(url: url)
+        let methodIsLiked = isLike == true ? "POST" : "DELETE"
+//        let methodIsLiked = "POST"
+        print("methodIsLiked \(methodIsLiked)")
+        request.httpMethod = methodIsLiked
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        print("request: \(request.description)")
+        //        print("request: \(request.allHTTPHeaderFields)")
+        return request
+    }
     
     func fetchPhotosNextPage(handler: @escaping (Result<[Photo], Error>) -> Void) {
         // Здесь получим страницу номер 1, если ещё не загружали ничего,
         // и следующую страницу (на единицу больше), если есть предыдущая загруженная страница
-//        guard let token = oauth2TokenStorage.token else { return }
+        //        guard let token = oauth2TokenStorage.token else { return }
         
         assert(Thread.isMainThread)
-        print("Thread.isMainThread: \(Thread.isMainThread)")
+        //        print("Thread.isMainThread: \(Thread.isMainThread)")
         
         if task != nil {
             task?.cancel()
@@ -86,7 +144,7 @@ final class ImagesListService {
             return
         }
         
-//        guard let request = createImageRequest(token, nextPage) else {
+        //        guard let request = createImageRequest(token, nextPage) else {
         guard let request = createImageRequest(token, nextPage) else {
             handler(.failure(ImageServiceError.invalidImageListRequest))
             return
@@ -98,13 +156,6 @@ final class ImagesListService {
             switch result {
             case .success(let photoResult):
                 print("in .success")
-//                let photoResult = PhotoResult(id: imageInfo.id,
-//                                               width: imageInfo.width,
-//                                               height: imageInfo.height,
-//                                               createdAt: (imageInfo.createdAt ?? Date()),
-//                                               welcomeDescription: (imageInfo.welcomeDescription ?? ""),
-//                                               isLiked: imageInfo.isLiked,
-//                                              urlsResult: imageInfo.urlsResult)
                 for i in photoResult {
                     self.photo = Photo(id: i.id,
                                        size: CGSize(width: Double(i.width ?? 0), height: Double(i.height ?? 0)),
@@ -117,7 +168,7 @@ final class ImagesListService {
                     photos.append(photo)
                 }
                 self.lastLoadedPage = nextPage
-                print("1. photos count in urlSession.objectTask \(photos.count)")
+                //                print("1. photos count in urlSession.objectTask \(photos.count)")
                 handler(.success(photos))
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
@@ -136,18 +187,18 @@ final class ImagesListService {
     }
     
     
-//    func createImageRequest(_ token: String) -> URLRequest? {
-//            
-//            guard let url = Constants.defaultBaseURL else { preconditionFailure("Incorrect URL") }
-//            var page = "1"
-//            var perPage = "10"
-//            var request = URLRequest.setHTTPRequest(
-//                path: "/photos?page=\(page)&&per_page=\(perPage)",
-//                httpMethod: "GET",
-//                url: url)
-//            request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-//            return request
-//        }
+    //    func createImageRequest(_ token: String) -> URLRequest? {
+    //
+    //            guard let url = Constants.defaultBaseURL else { preconditionFailure("Incorrect URL") }
+    //            var page = "1"
+    //            var perPage = "10"
+    //            var request = URLRequest.setHTTPRequest(
+    //                path: "/photos?page=\(page)&&per_page=\(perPage)",
+    //                httpMethod: "GET",
+    //                url: url)
+    //            request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    //            return request
+    //        }
     
     
     private func createImageRequest(_ token: String, _ pageNumber: Int) -> URLRequest? {
@@ -157,21 +208,21 @@ final class ImagesListService {
             URLQueryItem(name: "per_page", value: "10"),
         ]
         let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
-        print("url: \(urlString)")
+        //        print("url: \(urlString)")
         let finalURLString = URL(string: urlString)
         guard let url = finalURLString else {return nil}
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        print("request: \(request.description)")
-//        print("request: \(request.allHTTPHeaderFields)")
+        //        print("request: \(request.description)")
+        //        print("request: \(request.allHTTPHeaderFields)")
         return request
     }
     
 }
 
 //extension URLRequest {
-//    
+//
 //    static func setHTTPRequest(
 //        path: String,
 //        httpMethod: String,

@@ -8,19 +8,22 @@
 import UIKit
 import Kingfisher
 
+
 final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
-    var imageListCellVC = ImagesListCell()
+//    var imagesListCell = ImagesListCell()
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
+//    weak var delegate : ImagesListViewControllerProtocol?
     var photos: [Photo] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        imagesListCell.delegate = self
         callFetchPhotos()
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: ImagesListService.didChangeNotification,
@@ -33,10 +36,11 @@ final class ImagesListViewController: UIViewController {
             self.updateTableViewAnimated()
         }
     }
+
     
     
     func updateTableViewAnimated() {
-        print("in updatePhotos -> ImagesListViewController")
+//        print("in updatePhotos -> ImagesListViewController")
         //        let oldCount = photos.count
         //        let newCount = imagesListService.photos.count
         //        photos = imagesListService.photos
@@ -49,10 +53,8 @@ final class ImagesListViewController: UIViewController {
         //            } completion: { _ in }
         //        }
         DispatchQueue.main.async {
-            //            self.photos += self.imagesListService.photos
             self.tableView.reloadData()
         }
-        //        print(imagesListService.photos.description)
     }
     
     
@@ -65,7 +67,8 @@ final class ImagesListViewController: UIViewController {
                 assertionFailure("Invalid seque destination")
                 return
             }
-            viewController.image = UIImage()
+            let urlLargePhoto = photos[indexPath.row].largeImageURL ?? ""
+            viewController.urlLargePhoto = URL(string: urlLargePhoto)
         } else {
             super.prepare(for: segue, sender: sender)
         }
@@ -84,11 +87,8 @@ extension ImagesListViewController: UITableViewDataSource {
         imagesListService.fetchPhotosNextPage() { handler in
             switch handler {
             case .success(let photos):
-                //                print("2. photos count in callFetchPhotos \(photos.count)")
-                //                print("success in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController")
                 DispatchQueue.main.async {
                     self.photos += photos
-                    self.tableView.reloadData()
                 }
             case .failure(let error):
                 debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
@@ -100,7 +100,7 @@ extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         //        print("in tableView - row \(indexPath.row)")
-        print("4. photos count in willDisplay \(indexPath.row) \(photos.count)")
+//        print("4. photos count in willDisplay \(indexPath.row) \(photos.count)")
         if indexPath.row == photos.count - 1 {
             callFetchPhotos()
         }
@@ -122,13 +122,15 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        imageListCell.imageCellView.kf.indicatorType = .activity
+//        imageListCell.imageCellView.kf.indicatorType = .activity
         imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
             guard let self else {return}
             let actualRowHeight = self.tableView.rowHeight
-            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath)
+            guard let isLiked = photos[indexPath.row].isLiked else { return }
+            imageListCell.delegate = self
+            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath, isLiked: isLiked)
         }
-        
+
 //        tableView.reloadRows(at: [indexPath], with: .automatic)
         return imageListCell
     }
@@ -138,16 +140,52 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        print("3. photos count in heightForRowAt \(photos.count) \(indexPath.row)")
+//        print("3. photos count in heightForRowAt \(photos.count) \(indexPath.row)")
         
-        guard let heightImage = imagesListService.photos[indexPath.row].size?.height,
-              let widthImage = imagesListService.photos[indexPath.row].size?.width
+        guard let heightImage = photos[indexPath.row].size?.height,
+              let widthImage = photos[indexPath.row].size?.width
         else {return 0}
         let tableImageSize = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageCellWidth = tableView.bounds.width - tableImageSize.left - tableImageSize.right
         let actualWidth = imageCellWidth / widthImage
         let imageCellHeight = (heightImage * actualWidth) + tableImageSize.top + tableImageSize.bottom
         return imageCellHeight
+    }
+}
+
+extension ImagesListViewController: ImageListCellDelegate {
+    func updateLikeButton(in currentCell: ImagesListCell) {
+        print("in updateLikeButton")
+        guard let indexPath = tableView.indexPath(for: currentCell) else {
+            print("No indexPath")
+            return
+        }
+        print("before toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
+        photos[indexPath.row].isLiked?.toggle()
+        let photoId = photos[indexPath.row].id
+        let imageLike = photos[indexPath.row].isLiked
+        print("after toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photoId, isLike: imageLike) { [weak self] result in
+            guard let self else {
+                print("no self")
+                return
+            }
+            DispatchQueue.main.async {
+                print("in DispatchQueue: \(String(describing: self.photos[indexPath.row].id)), isLiked \(String(describing: self.photos[indexPath.row].isLiked))")
+                switch result {
+                case .success(let newLikeInfo):
+                    print("isLike \(String(describing: self.photos[indexPath.row].isLiked))")
+                    self.photos[indexPath.row].isLiked = newLikeInfo
+                case .failure(let error):
+                    print("Cannot get Like info \(error.localizedDescription)")
+                    self.photos[indexPath.row].isLiked?.toggle()
+                }
+//                self.updateTableViewAnimated()
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                UIBlockingProgressHUD.dismiss()
+            }
+        }
     }
 }
 

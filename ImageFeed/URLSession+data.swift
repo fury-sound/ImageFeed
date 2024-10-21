@@ -51,12 +51,14 @@ extension URLSession {
     ) -> URLSessionTask {
         let decoder = JSONDecoder()
         let task = data(for: request) { (result: Result<Data, Error>) in
+            print("result \(result)")
             switch result {
             case .success(let info):
                 do {
-//                    print("1. in do, \(T.self)")
+                    print("1. in do, \(T.self)")
                     let response = try decoder.decode(T.self, from: info)
-//                    print("2. in do")
+                    print("2. in do \(response)")
+                    print("Data: \(String(data: info, encoding: .utf8))")
                     completion(.success(response))
                 } catch(let error) {
 //                    print("3. in catch -> error")
