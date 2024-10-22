@@ -145,7 +145,7 @@ final class ProfileViewController: UIViewController {
         profileImageService.profileImageRemove()
         ImagesListService.shared.removeImagesList()
         removeProfileInfo()
-//        checkIfTokenIsRemoved() // calling temporary function
+//        checkIfTokenIsRem.activityoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
