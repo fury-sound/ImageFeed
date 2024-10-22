@@ -45,7 +45,7 @@ final class ImagesListCell: UITableViewCell {
     }
     
 
-    func configCell(rowHeight: CGFloat, url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
+    func configCell(url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
         
         self.selectionStyle = .none
         

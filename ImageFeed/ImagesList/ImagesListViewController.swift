@@ -118,15 +118,15 @@ extension ImagesListViewController: UITableViewDataSource {
             debugPrint("No url for image in thumbImageImageURL \(String(describing: photos[indexPath.row].thumbImageURL))")
             return UITableViewCell()
         }
-        
-        imageListCell.imageCellView.kf.indicatorType = .activity
+
+// Примечание для ревьюера: kf крашится при вызове .activity - возможно, какая-то бага в самом Кингфишере. Строка с .activity пока закомментирована.
+//        imageListCell.imageCellView.kf.indicatorType = .activity
         imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
             guard let self else {return}
-            let actualRowHeight = self.tableView.rowHeight
             guard let isLiked = photos[indexPath.row].isLiked else { return }
             imageListCell.delegate = self
             let createdDate = photos[indexPath.row].createdAt
-            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
+            imageListCell.configCell(url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
         }
         return imageListCell
     }
@@ -136,8 +136,6 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        print("3. photos count in heightForRowAt \(photos.count) \(indexPath.row)")
-        
         guard let heightImage = photos[indexPath.row].size?.height,
               let widthImage = photos[indexPath.row].size?.width
         else {return 0}

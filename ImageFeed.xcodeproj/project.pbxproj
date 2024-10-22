@@ -635,7 +635,7 @@
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
 			requirement = {
 				kind = exactVersion;
-				version = 8.0.1;
+				version = 8.1.0;
 			};
 		};
 		B987E74A2CA86AB100CC6BD8 /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */ = {
