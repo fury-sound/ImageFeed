@@ -23,6 +23,10 @@ struct Photo {
 
 struct PhotoUnsplash: Codable {
     var anyPhoto: PhotoResult?
+    
+    enum CodingKeys: String, CodingKey {
+        case anyPhoto = "photo"
+    }
 }
 
 struct PhotoResult: Codable {
@@ -88,16 +92,8 @@ final class ImagesListService {
             self.task = nil
             switch result {
             case .success(let photoUnsplash):
-                print("in .success")
-                print("in .success photoUnsplash.allPhotos?.isLiked: \(String(describing: photoUnsplash.anyPhoto?.id))")
-                print("in .success photoUnsplash.allPhotos?.isLiked: \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
-                guard let myPhoto = photoUnsplash.anyPhoto else {
-                    print("No myPhoto")
-                    return
-                }
-                guard let isLike = myPhoto.isLiked else {return}
-                //                let isLike = photoUnsplash.anyPhoto?.isLiked ?? false
-                print("isLike \(isLike) in \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
+                let isLike = photoUnsplash.anyPhoto?.isLiked ?? false
+//                print("isLike \(isLike) in \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
                 handler(.success(isLike))
    
             case .failure(let error):
@@ -118,7 +114,7 @@ final class ImagesListService {
         var request = URLRequest(url: url)
         let methodIsLiked = isLike == true ? "POST" : "DELETE"
 //        let methodIsLiked = "POST"
-        print("methodIsLiked \(methodIsLiked)")
+//        print("methodIsLiked \(methodIsLiked)")
         request.httpMethod = methodIsLiked
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         print("request: \(request.description)")
@@ -217,6 +213,13 @@ final class ImagesListService {
         //        print("request: \(request.description)")
         //        print("request: \(request.allHTTPHeaderFields)")
         return request
+    }
+    
+    func removeImagesList() {
+        photos = []
+        lastLoadedPage = nil
+        task?.cancel()
+        task = nil
     }
     
 }

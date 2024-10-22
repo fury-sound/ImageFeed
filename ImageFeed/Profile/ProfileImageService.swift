@@ -84,4 +84,11 @@ final class ProfileImageService {
         return request
     }
     
+    func profileImageRemove() {
+        avatarURL = nil
+        userResult = nil
+        task?.cancel()
+        task = nil
+    }
+    
 }

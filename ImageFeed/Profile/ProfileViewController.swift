@@ -110,7 +110,7 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    private func updateProfileDetails(profile: Profile) {        
+    private func updateProfileDetails(profile: Profile) {
         nameLabel.text = (profile.name != nil) ? profile.name : "Екатерина Новикова"
         loginNameLabel.text = (profile.loginName != nil) ? profile.loginName : "@ekaterina_nov"
         descriptionLabel.text = (profile.bio != nil) ? profile.bio : "Hello, world!"
@@ -129,11 +129,22 @@ final class ProfileViewController: UIViewController {
         }
     }
     
+    private func removeProfileInfo() {
+        nameLabel.text = ""
+        loginNameLabel.text = ""
+        descriptionLabel.text = ""
+        imageView.image = UIImage()
+    }
+
     // logout button function
     @objc private func logoutAction() {
         oauth2TokenStorage.token = ""
-        
         let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
+        ProfileLogoutService.shared.logout()
+        profileService.profileRemove()
+        profileImageService.profileImageRemove()
+        ImagesListService.shared.removeImagesList()
+        removeProfileInfo()
 //        checkIfTokenIsRemoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {

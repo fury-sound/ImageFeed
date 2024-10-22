@@ -12,18 +12,15 @@ import Kingfisher
 final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
-//    var imagesListCell = ImagesListCell()
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
-//    weak var delegate : ImagesListViewControllerProtocol?
     var photos: [Photo] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        imagesListCell.delegate = self
         callFetchPhotos()
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: ImagesListService.didChangeNotification,
@@ -122,16 +119,15 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-//        imageListCell.imageCellView.kf.indicatorType = .activity
+        imageListCell.imageCellView.kf.indicatorType = .activity
         imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
             guard let self else {return}
             let actualRowHeight = self.tableView.rowHeight
             guard let isLiked = photos[indexPath.row].isLiked else { return }
             imageListCell.delegate = self
-            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath, isLiked: isLiked)
+            let createdDate = photos[indexPath.row].createdAt
+            imageListCell.configCell(rowHeight: actualRowHeight, url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
         }
-
-//        tableView.reloadRows(at: [indexPath], with: .automatic)
         return imageListCell
     }
     
@@ -155,16 +151,16 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController: ImageListCellDelegate {
     func updateLikeButton(in currentCell: ImagesListCell) {
-        print("in updateLikeButton")
+//        print("in updateLikeButton")
         guard let indexPath = tableView.indexPath(for: currentCell) else {
             print("No indexPath")
             return
         }
-        print("before toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
+//        print("before toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
         photos[indexPath.row].isLiked?.toggle()
         let photoId = photos[indexPath.row].id
         let imageLike = photos[indexPath.row].isLiked
-        print("after toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
+//        print("after toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photoId, isLike: imageLike) { [weak self] result in
             guard let self else {
@@ -172,16 +168,15 @@ extension ImagesListViewController: ImageListCellDelegate {
                 return
             }
             DispatchQueue.main.async {
-                print("in DispatchQueue: \(String(describing: self.photos[indexPath.row].id)), isLiked \(String(describing: self.photos[indexPath.row].isLiked))")
+//                print("in DispatchQueue: \(String(describing: self.photos[indexPath.row].id)), isLiked \(String(describing: self.photos[indexPath.row].isLiked))")
                 switch result {
                 case .success(let newLikeInfo):
-                    print("isLike \(String(describing: self.photos[indexPath.row].isLiked))")
+//                    print("isLike \(String(describing: self.photos[indexPath.row].isLiked))")
                     self.photos[indexPath.row].isLiked = newLikeInfo
                 case .failure(let error):
-                    print("Cannot get Like info \(error.localizedDescription)")
+                    debugPrint("Cannot get Like info \(error.localizedDescription)")
                     self.photos[indexPath.row].isLiked?.toggle()
                 }
-//                self.updateTableViewAnimated()
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 UIBlockingProgressHUD.dismiss()
             }
