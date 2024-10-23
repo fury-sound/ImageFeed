@@ -9,14 +9,6 @@ import UIKit
 import Kingfisher
 
 final class SingleImageViewController: UIViewController {
-//    var image: UIImage? {
-//        didSet {
-//            guard isViewLoaded, let image else { return }
-//            imageView.image = image
-//            imageView.frame.size = image.size
-//            rescaleAndCenterImageInScrollView(image: image)
-//        }
-//    }
     
     var urlLargePhoto: URL?
     
@@ -34,7 +26,6 @@ final class SingleImageViewController: UIViewController {
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(ac, animated: true)
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,24 +59,16 @@ final class SingleImageViewController: UIViewController {
 
 extension SingleImageViewController: UIScrollViewDelegate {
     
-    func loadSinglePhoto() {
-        guard let urlLargePhoto else { return }
-        UIBlockingProgressHUD.show()
-        imageView.kf.indicatorType = .activity
-        imageView.kf.setImage(with: urlLargePhoto) {[weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            guard let self else {return}
-            switch result {
-            case .success(let largeImage):
-                self.imageView.frame.size = largeImage.image.size
-                self.rescaleAndCenterImageInScrollView(image: largeImage.image)
-            case .failure(let error):
-                print("Cannot show individual image: \(error.localizedDescription)")
-                self.showAlertError()
-            }
+    private func centerImagePosition() {
+        if scrollView.bounds.size.width > scrollView.contentSize.width {
+            let insetSizeForWidth = (scrollView.bounds.size.width - scrollView.contentSize.width) / 2
+            scrollView.contentInset.left = insetSizeForWidth
+        }
+        if scrollView.bounds.size.height > scrollView.contentSize.height {
+            let insetSizeForHeight = (scrollView.bounds.size.height - scrollView.contentSize.height) / 2
+            scrollView.contentInset.top = insetSizeForHeight
         }
     }
-    
     private func showAlertError() {
             let alert = UIAlertController(
                 title: "Что-то пошло не так...(",
@@ -101,6 +84,24 @@ extension SingleImageViewController: UIScrollViewDelegate {
             alert.addAction(cancel)
             present(alert, animated: true, completion: nil)
         }
+
+    func loadSinglePhoto() {
+        guard let urlLargePhoto else { return }
+        UIBlockingProgressHUD.show()
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: urlLargePhoto) {[weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self else {return}
+            switch result {
+            case .success(let largeImage):
+                self.imageView.frame.size = largeImage.image.size
+                self.rescaleAndCenterImageInScrollView(image: largeImage.image)
+            case .failure(let error):
+                debugPrint("Cannot show individual image loadSinglePhoto -> SingleImageViewController: \(error.localizedDescription)")
+                self.showAlertError()
+            }
+        }
+    }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
@@ -110,14 +111,5 @@ extension SingleImageViewController: UIScrollViewDelegate {
         centerImagePosition()
     }
     
-    private func centerImagePosition() {
-        if scrollView.bounds.size.width > scrollView.contentSize.width {
-            let insetSizeForWidth = (scrollView.bounds.size.width - scrollView.contentSize.width) / 2
-            scrollView.contentInset.left = insetSizeForWidth
-        }
-        if scrollView.bounds.size.height > scrollView.contentSize.height {
-            let insetSizeForHeight = (scrollView.bounds.size.height - scrollView.contentSize.height) / 2
-            scrollView.contentInset.top = insetSizeForHeight
-        }
-    }
+
 }

@@ -17,8 +17,8 @@ final class ImagesListViewController: UIViewController {
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
     var photos: [Photo] = []
-    
-    
+    private(set) var myImageHeight: CGFloat?
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         callFetchPhotos()
@@ -33,22 +33,8 @@ final class ImagesListViewController: UIViewController {
             self.updateTableViewAnimated()
         }
     }
-
     
-    
-    func updateTableViewAnimated() {
-//        print("in updatePhotos -> ImagesListViewController")
-        //        let oldCount = photos.count
-        //        let newCount = imagesListService.photos.count
-        //        photos = imagesListService.photos
-        //        if oldCount != newCount {
-        //            tableView.performBatchUpdates {
-        //                let indexPaths = (oldCount..<newCount).map { i in
-        //                    IndexPath(row: i, section: 0)
-        //                }
-        //                tableView.insertRows(at: indexPaths, with: .automatic)
-        //            } completion: { _ in }
-        //        }
+    private func updateTableViewAnimated() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -96,8 +82,6 @@ extension ImagesListViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        //        print("in tableView - row \(indexPath.row)")
-//        print("4. photos count in willDisplay \(indexPath.row) \(photos.count)")
         if indexPath.row == photos.count - 1 {
             callFetchPhotos()
         }
@@ -125,8 +109,10 @@ extension ImagesListViewController: UITableViewDataSource {
             guard let self else {return}
             guard let isLiked = photos[indexPath.row].isLiked else { return }
             imageListCell.delegate = self
+//            imageListCell.removeGradient()
             let createdDate = photos[indexPath.row].createdAt
-            imageListCell.configCell(url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
+            guard let myImageHeight else {return}
+            imageListCell.configCell(cellHeight: myImageHeight, url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
         }
         return imageListCell
     }
@@ -143,38 +129,37 @@ extension ImagesListViewController: UITableViewDataSource {
         let imageCellWidth = tableView.bounds.width - tableImageSize.left - tableImageSize.right
         let actualWidth = imageCellWidth / widthImage
         let imageCellHeight = (heightImage * actualWidth) + tableImageSize.top + tableImageSize.bottom
+        myImageHeight = imageCellHeight
         return imageCellHeight
     }
 }
 
 extension ImagesListViewController: ImageListCellDelegate {
+    
     func updateLikeButton(in currentCell: ImagesListCell) {
-//        print("in updateLikeButton")
         guard let indexPath = tableView.indexPath(for: currentCell) else {
-            print("No indexPath")
+            debugPrint("No indexPath in updateLikeButton -> ImagesListViewController")
             return
         }
-//        print("before toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
         photos[indexPath.row].isLiked?.toggle()
         let photoId = photos[indexPath.row].id
         let imageLike = photos[indexPath.row].isLiked
-//        print("after toggle: \(String(describing: photos[indexPath.row].id)), isLiked \(String(describing: photos[indexPath.row].isLiked))")
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photoId, isLike: imageLike) { [weak self] result in
             guard let self else {
-                print("no self")
+                debugPrint("no self updateLikeButton -> ImagesListViewController")
                 return
             }
             DispatchQueue.main.async {
-//                print("in DispatchQueue: \(String(describing: self.photos[indexPath.row].id)), isLiked \(String(describing: self.photos[indexPath.row].isLiked))")
                 switch result {
                 case .success(let newLikeInfo):
-//                    print("isLike \(String(describing: self.photos[indexPath.row].isLiked))")
                     self.photos[indexPath.row].isLiked = newLikeInfo
                 case .failure(let error):
                     debugPrint("Cannot get Like info \(error.localizedDescription)")
                     self.photos[indexPath.row].isLiked?.toggle()
                 }
+                guard let myImageHeight = self.myImageHeight else {return}
+                currentCell.gradientSetup(cellHeight: myImageHeight)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 UIBlockingProgressHUD.dismiss()
             }

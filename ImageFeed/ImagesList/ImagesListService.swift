@@ -71,13 +71,38 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private let dataFormatter = ISO8601DateFormatter()
     
+    private func createImageRequest(_ token: String, _ pageNumber: Int) -> URLRequest? {
+        var urlComponents = URLComponents()
+        urlComponents.queryItems = [
+            URLQueryItem(name: "page", value: "\(pageNumber)"),
+            URLQueryItem(name: "per_page", value: "10"),
+        ]
+        let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
+        let finalURLString = URL(string: urlString)
+        guard let url = finalURLString else {return nil}
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+    }
+    
+    private func changeLikeRequest(_ token: String, photoId: String, isLike: Bool) -> URLRequest? {
+        let urlString = Constants.baseAPIURLString + "/photos/" + photoId + "/like"
+        let finalURLString = URL(string: urlString)
+        guard let url = finalURLString else {return nil}
+        var request = URLRequest(url: url)
+        let methodIsLiked = isLike == true ? "POST" : "DELETE"
+        request.httpMethod = methodIsLiked
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        return request
+    }
     
     func changeLike(photoId: String?, isLike: Bool?, _ handler: @escaping (Result<Bool, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-//        if task != nil {
+        if task != nil {
             task?.cancel()
-//        }
+        }
         
         guard let photoId, let isLike, let token = oauth2TokenStorage.token else {return}
         
@@ -87,13 +112,10 @@ final class ImagesListService {
         }
         
         let task = urlSession.objectTask(for: request) { (result: Result<PhotoUnsplash, Error>) in
-            print("in task")
-//            guard let self else { return }
             self.task = nil
             switch result {
             case .success(let photoUnsplash):
                 let isLike = photoUnsplash.anyPhoto?.isLiked ?? false
-//                print("isLike \(isLike) in \(String(describing: photoUnsplash.anyPhoto?.isLiked))")
                 handler(.success(isLike))
    
             case .failure(let error):
@@ -106,29 +128,11 @@ final class ImagesListService {
         task.resume()
     }
     
-    func changeLikeRequest(_ token: String, photoId: String, isLike: Bool) -> URLRequest? {
-        let urlString = Constants.baseAPIURLString + "/photos/" + photoId + "/like"
-//        print("url for Like: \(urlString)")
-        let finalURLString = URL(string: urlString)
-        guard let url = finalURLString else {return nil}
-        var request = URLRequest(url: url)
-        let methodIsLiked = isLike == true ? "POST" : "DELETE"
-//        let methodIsLiked = "POST"
-//        print("methodIsLiked \(methodIsLiked)")
-        request.httpMethod = methodIsLiked
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        print("request: \(request.description)")
-        //        print("request: \(request.allHTTPHeaderFields)")
-        return request
-    }
-    
     func fetchPhotosNextPage(handler: @escaping (Result<[Photo], Error>) -> Void) {
         // Здесь получим страницу номер 1, если ещё не загружали ничего,
         // и следующую страницу (на единицу больше), если есть предыдущая загруженная страница
-        //        guard let token = oauth2TokenStorage.token else { return }
         
         assert(Thread.isMainThread)
-        //        print("Thread.isMainThread: \(Thread.isMainThread)")
         
         if task != nil {
             task?.cancel()
@@ -140,18 +144,15 @@ final class ImagesListService {
             return
         }
         
-        //        guard let request = createImageRequest(token, nextPage) else {
         guard let request = createImageRequest(token, nextPage) else {
             handler(.failure(ImageServiceError.invalidImageListRequest))
             return
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult],Error>) in
-            print("in task")
             guard let self else { return }
             switch result {
             case .success(let photoResult):
-                print("in .success")
                 for i in photoResult {
                     self.photo = Photo(id: i.id,
                                        size: CGSize(width: Double(i.width ?? 0), height: Double(i.height ?? 0)),
@@ -164,7 +165,6 @@ final class ImagesListService {
                     photos.append(photo)
                 }
                 self.lastLoadedPage = nextPage
-                //                print("1. photos count in urlSession.objectTask \(photos.count)")
                 handler(.success(photos))
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
@@ -182,39 +182,7 @@ final class ImagesListService {
         task.resume()
     }
     
-    
-    //    func createImageRequest(_ token: String) -> URLRequest? {
-    //
-    //            guard let url = Constants.defaultBaseURL else { preconditionFailure("Incorrect URL") }
-    //            var page = "1"
-    //            var perPage = "10"
-    //            var request = URLRequest.setHTTPRequest(
-    //                path: "/photos?page=\(page)&&per_page=\(perPage)",
-    //                httpMethod: "GET",
-    //                url: url)
-    //            request?.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-    //            return request
-    //        }
-    
-    
-    private func createImageRequest(_ token: String, _ pageNumber: Int) -> URLRequest? {
-        var urlComponents = URLComponents()
-        urlComponents.queryItems = [
-            URLQueryItem(name: "page", value: "\(pageNumber)"),
-            URLQueryItem(name: "per_page", value: "10"),
-        ]
-        let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
-        //        print("url: \(urlString)")
-        let finalURLString = URL(string: urlString)
-        guard let url = finalURLString else {return nil}
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        //        print("request: \(request.description)")
-        //        print("request: \(request.allHTTPHeaderFields)")
-        return request
-    }
-    
+
     func removeImagesList() {
         photos = []
         lastLoadedPage = nil
@@ -223,26 +191,3 @@ final class ImagesListService {
     }
     
 }
-
-//extension URLRequest {
-//
-//    static func setHTTPRequest(
-//        path: String,
-//        httpMethod: String,
-//        url: URL = {
-//            guard let url = Constants.defaultBaseURL else { preconditionFailure("IncorrectURL") }
-//            return url
-//        }()
-//    ) -> URLRequest? {
-//        guard let url = URL(string: path, relativeTo: url)
-//        else {
-//            return nil
-//        }
-//        var request = URLRequest(url: url)
-//        request.httpMethod = httpMethod
-//        return request
-//    }
-//}
-
-
-
