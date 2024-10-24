@@ -69,7 +69,7 @@ final class ProfileViewController: UIViewController {
         let arrowButton = UIButton()
         let buttonImage = UIImage(named: "Exit")
         arrowButton.setImage(buttonImage, for: .normal)
-        arrowButton.addTarget(self, action: #selector(logoutAction), for: .touchUpInside) // logout action
+        arrowButton.addTarget(self, action: #selector(logoutAlert), for: .touchUpInside) // logout action
         view.addSubview(arrowButton)
         arrowButton.translatesAutoresizingMaskIntoConstraints = false
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
@@ -135,10 +135,9 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.text = ""
         imageView.image = UIImage()
     }
-
-    // logout button function
-    @objc private func logoutAction() {
-        oauth2TokenStorage.token = ""
+    
+    private func logoutAction() {
+        oauth2TokenStorage.token = nil
         let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
         ProfileLogoutService.shared.logout()
         profileService.profileRemove()
@@ -156,5 +155,28 @@ final class ProfileViewController: UIViewController {
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController
     }
+    
+    
+    // logout button function
+    @objc private func logoutAlert() {
+            let alert = UIAlertController(title: "Выходим из приложения!",
+                                          message: "Вы уверены, что хотите выйти?",
+                                          preferredStyle: .alert)
+            
+            let action = UIAlertAction(title: "Да",
+                                       style: .default) { [weak self] _ in
+                guard let self else { return }
+                logoutAction()
+            }
+            
+            let cancel = UIAlertAction(title: "Нет",
+                                       style: .cancel) { _ in
+                alert.dismiss(animated: true)
+            }
+            alert.addAction(action)
+            alert.addAction(cancel)
+            present(alert, animated: true)
+        }
+
     
 }

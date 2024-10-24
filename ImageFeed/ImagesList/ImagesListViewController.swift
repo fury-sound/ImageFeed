@@ -154,13 +154,16 @@ extension ImagesListViewController: ImageListCellDelegate {
                 switch result {
                 case .success(let newLikeInfo):
                     self.photos[indexPath.row].isLiked = newLikeInfo
+                    guard let isLikedStatus = self.photos[indexPath.row].isLiked else {return}
+                    currentCell.setIsLiked(isLiked: isLikedStatus)
                 case .failure(let error):
                     debugPrint("Cannot get Like info \(error.localizedDescription)")
                     self.photos[indexPath.row].isLiked?.toggle()
                 }
-                guard let myImageHeight = self.myImageHeight else {return}
-                currentCell.gradientSetup(cellHeight: myImageHeight)
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                // gradient - выключен
+//                guard let myImageHeight = self.myImageHeight else {return}
+//                currentCell.gradientSetup(cellHeight: myImageHeight)
+//                self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 UIBlockingProgressHUD.dismiss()
             }
         }

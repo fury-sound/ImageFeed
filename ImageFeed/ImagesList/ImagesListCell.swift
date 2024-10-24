@@ -24,7 +24,7 @@ final class ImagesListCell: UITableViewCell {
     private let gradient = CAGradientLayer()
         
     @objc private func isLikeChangeFunction() {
-        removeGradient()
+//        removeGradient()
         delegate?.updateLikeButton(in: self)
     }
 
@@ -36,6 +36,10 @@ final class ImagesListCell: UITableViewCell {
         return formatter
     }()
     
+    func setIsLiked(isLiked: Bool) {
+        let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
+        self.buttonCellView.setImage(likeImage, for: .normal)
+    }
     
     func removeGradient() {
         // подготовка ячейки перед переиспользованием - удаляю все подслои, иначе фрейм градиента и, видимо, кнопки накладываются
@@ -46,10 +50,12 @@ final class ImagesListCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        removeGradient()
+//        removeGradient()
         imageCellView.kf.cancelDownloadTask()
     }
     
+    
+//    функция вызова градиента - отключена
     func gradientSetup(cellHeight: CGFloat) {
         // создание и настройка фрейма градиента: цвета, расположение, добавление подслоем
         let trueHeight = cellHeight - 40
@@ -69,7 +75,7 @@ final class ImagesListCell: UITableViewCell {
         
         self.selectionStyle = .none
         
-        gradientSetup(cellHeight: cellHeight)
+//        gradientSetup(cellHeight: cellHeight)
         
         let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
         self.buttonCellView.setImage(likeImage, for: .normal)

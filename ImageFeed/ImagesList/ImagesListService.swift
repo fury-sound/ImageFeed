@@ -133,10 +133,11 @@ final class ImagesListService {
         // и следующую страницу (на единицу больше), если есть предыдущая загруженная страница
         
         assert(Thread.isMainThread)
+        guard task == nil else { return }
         
-        if task != nil {
-            task?.cancel()
-        }
+//        if task != nil {
+//            task?.cancel()
+//        }
         
         let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
         guard let token = oauth2TokenStorage.token else {
@@ -156,7 +157,7 @@ final class ImagesListService {
                 for i in photoResult {
                     self.photo = Photo(id: i.id,
                                        size: CGSize(width: Double(i.width ?? 0), height: Double(i.height ?? 0)),
-                                       createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? Date(),
+                                       createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? nil,
                                        welcomeDescription: i.welcomeDescription ?? "",
                                        thumbImageURL: i.urlsResult?.thumbImageURL ?? "",
                                        largeImageURL: i.urlsResult?.largeImageURL ?? "",
