@@ -32,6 +32,7 @@ final class ProfileImageService {
     private var task: URLSessionTask?
     private var userResult: UserResult?
     private(set) var avatarURL: String?
+        
     
     func fetchProfileImageURL(username: String, _ handler: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
@@ -81,6 +82,13 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(code)", forHTTPHeaderField: "Authorization")
         return request
+    }
+    
+    func profileImageRemove() {
+        avatarURL = nil
+        userResult = nil
+        task?.cancel()
+        task = nil
     }
     
 }
