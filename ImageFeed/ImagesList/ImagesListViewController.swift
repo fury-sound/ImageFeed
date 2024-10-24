@@ -105,8 +105,7 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
-// Примечание для ревьюера: kf крашится при вызове .activity - возможно, какая-то бага в самом Кингфишере. Строка с .activity пока закомментирована.
-//        imageListCell.imageCellView.kf.indicatorType = .activity
+        imageListCell.imageCellView.kf.indicatorType = .activity
         imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
             guard let self else {return}
             guard let isLiked = photos[indexPath.row].isLiked else { return }

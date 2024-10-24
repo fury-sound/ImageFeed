@@ -46,11 +46,10 @@ final class ImagesListCell: UITableViewCell {
     }
     
     
-//    функция вызова градиента - отключена
     func gradientSetup(cellHeight: CGFloat) {
         // создание и настройка фрейма градиента: цвета, расположение, добавление подслоем
         let trueHeight = cellHeight - 40
-        let trueWidth = self.imageCellView.frame.maxX // size.width //frame.maxY
+        let trueWidth = self.imageCellView.frame.maxX
         gradient.frame = CGRect(x: 0, y: trueHeight, width: trueWidth, height: 30)
         gradient.locations = [0, 0.1, 0.3]
         gradient.colors = [
