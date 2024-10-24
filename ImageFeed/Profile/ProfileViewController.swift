@@ -120,7 +120,6 @@ final class ProfileViewController: UIViewController {
     // temporary function to clean all UserDefaults values
     private func checkIfTokenIsRemoved() {
         // checking if bearerToken was removed
-//        oauth2TokenStorage.token = ""
         let keyValue = "bearerToken"
         let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
         guard isSuccess != nil else {
@@ -159,8 +158,8 @@ final class ProfileViewController: UIViewController {
     
     // logout button function
     @objc private func logoutAlert() {
-            let alert = UIAlertController(title: "Выходим из приложения!",
-                                          message: "Вы уверены, что хотите выйти?",
+            let alert = UIAlertController(title: "Пока, пока!",
+                                          message: "Уверены, что хотите выйти?",
                                           preferredStyle: .alert)
             
             let action = UIAlertAction(title: "Да",

@@ -16,7 +16,7 @@ final class ImagesListViewController: UIViewController {
     private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
     private let oauth2TokenStorage = OAuth2TokenStorage()
-    var photos: [Photo] = []
+    private(set) var photos: [Photo] = []
     private(set) var myImageHeight: CGFloat?
         
     override func viewDidLoad() {
@@ -67,11 +67,13 @@ extension ImagesListViewController: UITableViewDelegate {
 extension ImagesListViewController: UITableViewDataSource {
     
     func callFetchPhotos() {
-        imagesListService.fetchPhotosNextPage() { handler in
+        imagesListService.fetchPhotosNextPage() { [weak self] handler in
+            guard let self else { return }
             switch handler {
             case .success(let photos):
                 DispatchQueue.main.async {
                     self.photos += photos
+                    self.tableView.reloadData()
                 }
             case .failure(let error):
                 debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
@@ -109,7 +111,6 @@ extension ImagesListViewController: UITableViewDataSource {
             guard let self else {return}
             guard let isLiked = photos[indexPath.row].isLiked else { return }
             imageListCell.delegate = self
-//            imageListCell.removeGradient()
             let createdDate = photos[indexPath.row].createdAt
             guard let myImageHeight else {return}
             imageListCell.configCell(cellHeight: myImageHeight, url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
@@ -160,10 +161,6 @@ extension ImagesListViewController: ImageListCellDelegate {
                     debugPrint("Cannot get Like info \(error.localizedDescription)")
                     self.photos[indexPath.row].isLiked?.toggle()
                 }
-                // gradient - выключен
-//                guard let myImageHeight = self.myImageHeight else {return}
-//                currentCell.gradientSetup(cellHeight: myImageHeight)
-//                self.tableView.reloadRows(at: [indexPath], with: .automatic)
                 UIBlockingProgressHUD.dismiss()
             }
         }

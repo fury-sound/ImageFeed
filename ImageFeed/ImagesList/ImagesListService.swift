@@ -63,7 +63,6 @@ final class ImagesListService {
     static let shared = ImagesListService()
     private init() {}
     private var lastLoadedPage: Int?
-    private(set) var photos: [Photo] = []
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private let oauth2TokenStorage = OAuth2TokenStorage()
@@ -73,9 +72,10 @@ final class ImagesListService {
     
     private func createImageRequest(_ token: String, _ pageNumber: Int) -> URLRequest? {
         var urlComponents = URLComponents()
+        //примечание: к-во фото на страницу (per_page) проставлено как 5 - больше перезапусков приложения до исчерпания лимита подключений
         urlComponents.queryItems = [
             URLQueryItem(name: "page", value: "\(pageNumber)"),
-            URLQueryItem(name: "per_page", value: "10"),
+            URLQueryItem(name: "per_page", value: "5"),
         ]
         let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
         let finalURLString = URL(string: urlString)
@@ -136,10 +136,11 @@ final class ImagesListService {
         guard task == nil else { return }
         
 //        if task != nil {
-//            task?.cancel()
+            task?.cancel()
 //        }
         
-        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+//        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+        let nextPage = (lastLoadedPage ?? 0) + 1
         guard let token = oauth2TokenStorage.token else {
             handler(.failure(ImageServiceError.invalidImageListRequest))
             return
@@ -154,23 +155,25 @@ final class ImagesListService {
             guard let self else { return }
             switch result {
             case .success(let photoResult):
-                for i in photoResult {
-                    self.photo = Photo(id: i.id,
-                                       size: CGSize(width: Double(i.width ?? 0), height: Double(i.height ?? 0)),
-                                       createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? nil,
-                                       welcomeDescription: i.welcomeDescription ?? "",
-                                       thumbImageURL: i.urlsResult?.thumbImageURL ?? "",
-                                       largeImageURL: i.urlsResult?.largeImageURL ?? "",
-                                       isLiked: i.isLiked ?? false)
+                var photosInImageService: [Photo] = []
+                for index in photoResult {
+                    self.photo = Photo(id: index.id,
+                                       size: CGSize(width: Double(index.width ?? 0), height: Double(index.height ?? 0)),
+//                                       createdAt: dataFormatter.date(from: i.createdAt ?? "") ?? nil,
+                                       createdAt: index.createdAt.flatMap({ self.dataFormatter.date(from: $0) }),
+                                       welcomeDescription: index.welcomeDescription ?? "",
+                                       thumbImageURL: index.urlsResult?.thumbImageURL ?? "",
+                                       largeImageURL: index.urlsResult?.largeImageURL ?? "",
+                                       isLiked: index.isLiked ?? false)
                     guard let photo = self.photo else {return}
-                    photos.append(photo)
+                    photosInImageService.append(photo)
                 }
                 self.lastLoadedPage = nextPage
-                handler(.success(photos))
+                handler(.success(photosInImageService))
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self,
-                    userInfo: ["Photos" : photos]
+                    userInfo: ["Photos" : photosInImageService]
                 )
             case .failure(let error):
                 debugPrint("Decoder error:", error.localizedDescription)
@@ -185,7 +188,6 @@ final class ImagesListService {
     
 
     func removeImagesList() {
-        photos = []
         lastLoadedPage = nil
         task?.cancel()
         task = nil

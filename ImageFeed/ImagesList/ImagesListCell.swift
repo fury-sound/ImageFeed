@@ -16,7 +16,7 @@ final class ImagesListCell: UITableViewCell {
     
     @IBOutlet weak var imageCellView: UIImageView!
     @IBOutlet private weak var dateCellView: UILabel!
-    @IBOutlet private weak var buttonCellView: UIButton!
+    @IBOutlet private weak var likeButton: UIButton!
     
     static let reuseIdentifier = "ImagesListCell"
     private let imagesListService = ImagesListService.shared
@@ -24,7 +24,6 @@ final class ImagesListCell: UITableViewCell {
     private let gradient = CAGradientLayer()
         
     @objc private func isLikeChangeFunction() {
-//        removeGradient()
         delegate?.updateLikeButton(in: self)
     }
 
@@ -38,19 +37,11 @@ final class ImagesListCell: UITableViewCell {
     
     func setIsLiked(isLiked: Bool) {
         let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
-        self.buttonCellView.setImage(likeImage, for: .normal)
-    }
-    
-    func removeGradient() {
-        // подготовка ячейки перед переиспользованием - удаляю все подслои, иначе фрейм градиента и, видимо, кнопки накладываются
-        if self.imageCellView.layer.sublayers?.count != nil  {
-            self.imageCellView.layer.sublayers?.removeAll()
-        }
+        self.likeButton.setImage(likeImage, for: .normal)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-//        removeGradient()
         imageCellView.kf.cancelDownloadTask()
     }
     
@@ -73,14 +64,13 @@ final class ImagesListCell: UITableViewCell {
 
     func configCell(cellHeight: CGFloat, url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
         
+        gradientSetup(cellHeight: cellHeight)
+        
         self.selectionStyle = .none
-        
-//        gradientSetup(cellHeight: cellHeight)
-        
         let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
-        self.buttonCellView.setImage(likeImage, for: .normal)
+        self.likeButton.setImage(likeImage, for: .normal)
         
-        buttonCellView.addTarget(self,
+        likeButton.addTarget(self,
                                  action: #selector(isLikeChangeFunction),
                                  for: .touchUpInside)
         
