@@ -170,6 +170,4 @@ extension SplashViewController: AuthViewControllerDelegate {
         }
         rootVC.present(alert, animated: true)
     }
-
-    
 }

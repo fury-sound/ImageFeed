@@ -165,7 +165,7 @@ final class ProfileViewController: UIViewController {
             let action = UIAlertAction(title: "Да",
                                        style: .default) { [weak self] _ in
                 guard let self else { return }
-                logoutAction()
+                self.logoutAction()
             }
             
             let cancel = UIAlertAction(title: "Нет",
