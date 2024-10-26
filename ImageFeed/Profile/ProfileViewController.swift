@@ -26,6 +26,7 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        checkIfTokenIsRemoved()
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
@@ -68,7 +69,7 @@ final class ProfileViewController: UIViewController {
         let arrowButton = UIButton()
         let buttonImage = UIImage(named: "Exit")
         arrowButton.setImage(buttonImage, for: .normal)
-        arrowButton.addTarget(self, action: #selector(logoutAction), for: .touchUpInside) // logout action
+        arrowButton.addTarget(self, action: #selector(logoutAlert), for: .touchUpInside) // logout action
         view.addSubview(arrowButton)
         arrowButton.translatesAutoresizingMaskIntoConstraints = false
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
@@ -109,7 +110,7 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    private func updateProfileDetails(profile: Profile) {        
+    private func updateProfileDetails(profile: Profile) {
         nameLabel.text = (profile.name != nil) ? profile.name : "Екатерина Новикова"
         loginNameLabel.text = (profile.loginName != nil) ? profile.loginName : "@ekaterina_nov"
         descriptionLabel.text = (profile.bio != nil) ? profile.bio : "Hello, world!"
@@ -127,11 +128,22 @@ final class ProfileViewController: UIViewController {
         }
     }
     
-    // logout button function
-    @objc private func logoutAction() {
-        oauth2TokenStorage.token = ""
+    private func removeProfileInfo() {
+        nameLabel.text = ""
+        loginNameLabel.text = ""
+        descriptionLabel.text = ""
+        imageView.image = UIImage()
+    }
+    
+    private func logoutAction() {
+        oauth2TokenStorage.token = nil
         let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-        //        checkIfTokenIsRemoved() // calling temporary function
+        ProfileLogoutService.shared.logout()
+        profileService.profileRemove()
+        profileImageService.profileImageRemove()
+        ImagesListService.shared.removeImagesList()
+        removeProfileInfo()
+//        checkIfTokenIsRem.activityoved() // calling temporary function
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
@@ -142,5 +154,28 @@ final class ProfileViewController: UIViewController {
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController
     }
+    
+    
+    // logout button function
+    @objc private func logoutAlert() {
+            let alert = UIAlertController(title: "Пока, пока!",
+                                          message: "Уверены, что хотите выйти?",
+                                          preferredStyle: .alert)
+            
+            let action = UIAlertAction(title: "Да",
+                                       style: .default) { [weak self] _ in
+                guard let self else { return }
+                self.logoutAction()
+            }
+            
+            let cancel = UIAlertAction(title: "Нет",
+                                       style: .cancel) { _ in
+                alert.dismiss(animated: true)
+            }
+            alert.addAction(action)
+            alert.addAction(cancel)
+            present(alert, animated: true)
+        }
+
     
 }

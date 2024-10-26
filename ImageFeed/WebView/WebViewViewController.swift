@@ -37,7 +37,7 @@ final class WebViewViewController: UIViewController {
         loadAuthView()
     }
     
-    func backButtonSetup() {
+    private func backButtonSetup() {
         let buttonImage = UIImage(named: "nav_back_button")
         backButton.setImage(buttonImage, for: .normal)
         backButton.addTarget(self, action: #selector(tapBackButton), for: .touchUpInside) // back button action

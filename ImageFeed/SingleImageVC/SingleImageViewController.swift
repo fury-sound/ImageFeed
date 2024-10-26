@@ -6,17 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
-    var image: UIImage? {
-        didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            imageView.frame.size = image.size
-            rescaleAndCenterImageInScrollView(image: image)
-        }
-    }
-    @IBOutlet private weak var imageView: UIImageView!
+    
+    var urlLargePhoto: URL?
+    
+    @IBOutlet weak var imageView: UIImageView!
     
     @IBOutlet weak var scrollView: UIScrollView!
     
@@ -25,21 +21,21 @@ final class SingleImageViewController: UIViewController {
     }
     
     @IBAction func didTapShareButton(_ sender: Any) {
-        guard let image else {return}
+        guard let image = imageView.image else {return}
         let items = [image]
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(ac, animated: true)
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSingleImageView()
+        loadSinglePhoto()
+    }
+
+    private func setupSingleImageView() {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
-        guard let image else {return}
-        imageView.image = image
-        imageView.frame.size = image.size
-        rescaleAndCenterImageInScrollView(image: image)
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -62,13 +58,6 @@ final class SingleImageViewController: UIViewController {
 }
 
 extension SingleImageViewController: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        imageView
-    }
-    
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        centerImagePosition()
-    }
     
     private func centerImagePosition() {
         if scrollView.bounds.size.width > scrollView.contentSize.width {
@@ -80,4 +69,47 @@ extension SingleImageViewController: UIScrollViewDelegate {
             scrollView.contentInset.top = insetSizeForHeight
         }
     }
+    private func showAlertError() {
+            let alert = UIAlertController(
+                title: "Что-то пошло не так...(",
+                message: "Попробовать еще раз?",
+                preferredStyle: .alert)
+            let action = UIAlertAction(title: "Повторить?", style: .default, handler: { [weak self] action in
+                guard let self = self else { return }
+                self.loadSinglePhoto()
+            })
+            let cancel = UIAlertAction(title: "Не надо!", style: .cancel, handler: nil)
+            
+            alert.addAction(action)
+            alert.addAction(cancel)
+            present(alert, animated: true, completion: nil)
+        }
+
+    func loadSinglePhoto() {
+        guard let urlLargePhoto else { return }
+        UIBlockingProgressHUD.show()
+        imageView.kf.indicatorType = .activity
+        imageView.kf.setImage(with: urlLargePhoto) {[weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self else {return}
+            switch result {
+            case .success(let largeImage):
+                self.imageView.frame.size = largeImage.image.size
+                self.rescaleAndCenterImageInScrollView(image: largeImage.image)
+            case .failure(let error):
+                debugPrint("Cannot show individual image loadSinglePhoto -> SingleImageViewController: \(error.localizedDescription)")
+                self.showAlertError()
+            }
+        }
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        imageView
+    }
+    
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        centerImagePosition()
+    }
+    
+
 }
