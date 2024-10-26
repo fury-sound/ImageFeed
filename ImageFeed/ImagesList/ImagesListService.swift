@@ -134,12 +134,7 @@ final class ImagesListService {
         
         assert(Thread.isMainThread)
         guard task == nil else { return }
-        
-//        if task != nil {
-            task?.cancel()
-//        }
-        
-//        let nextPage = lastLoadedPage == nil ? 1 : lastLoadedPage! + 1
+                
         let nextPage = (lastLoadedPage ?? 0) + 1
         guard let token = oauth2TokenStorage.token else {
             handler(.failure(ImageServiceError.invalidImageListRequest))
