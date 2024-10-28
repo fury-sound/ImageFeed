@@ -41,7 +41,7 @@ final class ProfileService {
     private(set) var profile: Profile?
     
     private func createURLRequest(_ code: String) -> URLRequest? {
-        guard let url = Constants.finaAPIlURLString else {return nil}
+        guard let url = Constants.finalURLStringMe else {return nil}
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(code)", forHTTPHeaderField: "Authorization")

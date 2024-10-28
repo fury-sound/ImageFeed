@@ -8,20 +8,26 @@
 import UIKit
 import Kingfisher
 
+protocol ImagesListViewControllerProtocol: AnyObject {
+    func updateTableViewAnimated()
+    func tapLikeButton(for cell: ImagesListCell)
+    func showHUD()
+    func hideHUD()
+}
 
-final class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol, ImageListCellDelegate {
     
     @IBOutlet private var tableView: UITableView!
+    var presenter: ImagesListPresenterProtocol?
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let imagesListService = ImagesListService.shared
     private var imagesListServiceObserver: NSObjectProtocol?
-    private let oauth2TokenStorage = OAuth2TokenStorage()
-    private(set) var photos: [Photo] = []
     private(set) var myImageHeight: CGFloat?
+    
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        callFetchPhotos()
+        tableView.accessibilityIdentifier = "ImagesListViewController"
+        presenter?.callFetchPhotos()
         imagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: ImagesListService.didChangeNotification,
             object: nil,
@@ -34,7 +40,8 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
-    private func updateTableViewAnimated() {
+    
+    func updateTableViewAnimated() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -50,7 +57,7 @@ final class ImagesListViewController: UIViewController {
                 assertionFailure("Invalid seque destination")
                 return
             }
-            let urlLargePhoto = photos[indexPath.row].largeImageURL ?? ""
+            let urlLargePhoto = presenter?.photos[indexPath.row].largeImageURL ?? ""
             viewController.urlLargePhoto = URL(string: urlLargePhoto)
         } else {
             super.prepare(for: segue, sender: sender)
@@ -66,26 +73,10 @@ extension ImagesListViewController: UITableViewDelegate {
 
 extension ImagesListViewController: UITableViewDataSource {
     
-    func callFetchPhotos() {
-        imagesListService.fetchPhotosNextPage() { [weak self] handler in
-            guard let self else { return }
-            switch handler {
-            case .success(let photos):
-                DispatchQueue.main.async {
-                    self.photos += photos
-                    self.tableView.reloadData()
-                }
-            case .failure(let error):
-                debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
-                return
-            }
-        }
-    }
-    
-    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == photos.count - 1 {
-            callFetchPhotos()
+        guard let presenter else { return }
+        if indexPath.row == presenter.photos.count - 1 {
+            presenter.callFetchPhotos()
         }
     }
     
@@ -98,19 +89,19 @@ extension ImagesListViewController: UITableViewDataSource {
         }
         
         guard
-            let thumbImageURL = photos[indexPath.row].thumbImageURL,
+            let thumbImageURL = presenter?.photos[indexPath.row].thumbImageURL,
             let url = URL(string: thumbImageURL)
         else {
-            debugPrint("No url for image in thumbImageImageURL \(String(describing: photos[indexPath.row].thumbImageURL))")
+            debugPrint("No url for image in thumbImageImageURL \(String(describing: presenter?.photos[indexPath.row].thumbImageURL))")
             return UITableViewCell()
         }
-
+        
         imageListCell.imageCellView.kf.indicatorType = .activity
         imageListCell.imageCellView.kf.setImage(with: url, placeholder: UIImage.scribble) { [weak self] _ in
             guard let self else {return}
-            guard let isLiked = photos[indexPath.row].isLiked else { return }
+            guard let isLiked = presenter?.photos[indexPath.row].isLiked else { return }
             imageListCell.delegate = self
-            let createdDate = photos[indexPath.row].createdAt
+            let createdDate = presenter?.photos[indexPath.row].createdAt
             guard let myImageHeight else {return}
             imageListCell.configCell(cellHeight: myImageHeight, url: url, indexPath: indexPath, isLiked: isLiked, createdAt: createdDate)
         }
@@ -118,12 +109,12 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        return presenter?.photos.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let heightImage = photos[indexPath.row].size?.height,
-              let widthImage = photos[indexPath.row].size?.width
+        guard let heightImage = presenter?.photos[indexPath.row].size?.height,
+              let widthImage = presenter?.photos[indexPath.row].size?.width
         else {return 0}
         let tableImageSize = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageCellWidth = tableView.bounds.width - tableImageSize.left - tableImageSize.right
@@ -132,37 +123,26 @@ extension ImagesListViewController: UITableViewDataSource {
         myImageHeight = imageCellHeight
         return imageCellHeight
     }
-}
+//}
 
-extension ImagesListViewController: ImageListCellDelegate {
-    
-    func updateLikeButton(in currentCell: ImagesListCell) {
-        guard let indexPath = tableView.indexPath(for: currentCell) else {
+//extension ImagesListViewController: ImageListCellDelegate {
+
+    func tapLikeButton(for cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
             debugPrint("No indexPath in updateLikeButton -> ImagesListViewController")
             return
         }
-        photos[indexPath.row].isLiked?.toggle()
-        let photoId = photos[indexPath.row].id
-        let imageLike = photos[indexPath.row].isLiked
-        UIBlockingProgressHUD.show()
-        imagesListService.changeLike(photoId: photoId, isLike: imageLike) { [weak self] result in
-            guard let self else {
-                debugPrint("no self updateLikeButton -> ImagesListViewController")
-                return
-            }
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let newLikeInfo):
-                    self.photos[indexPath.row].isLiked = newLikeInfo
-                    guard let isLikedStatus = self.photos[indexPath.row].isLiked else {return}
-                    currentCell.setIsLiked(isLiked: isLikedStatus)
-                case .failure(let error):
-                    debugPrint("Cannot get Like info \(error.localizedDescription)")
-                    self.photos[indexPath.row].isLiked?.toggle()
-                }
-                UIBlockingProgressHUD.dismiss()
-            }
-        }
+        presenter?.updateLikeButton(indexPath: indexPath)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
+    
+    func showHUD() {
+        UIBlockingProgressHUD.show()
+    }
+
+    func hideHUD() {
+        UIBlockingProgressHUD.dismiss()
+    }
+    
 }
 
