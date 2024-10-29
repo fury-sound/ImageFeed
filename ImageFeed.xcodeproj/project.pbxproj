@@ -112,6 +112,7 @@
 			membershipExceptions = (
 				ImagesListTests.swift,
 				ProfileTests.swift,
+				WebViewTests.swift,
 			);
 			target = B9AF9E8E2CB5C8D000B497E0 /* ImageFeedTests */;
 		};

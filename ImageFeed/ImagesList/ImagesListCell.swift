@@ -63,18 +63,18 @@ final class ImagesListCell: UITableViewCell {
 
     func configCell(cellHeight: CGFloat, url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
         
-        likeButton.accessibilityIdentifier = "LikeButton"
-        
         gradientSetup(cellHeight: cellHeight)
         
         self.selectionStyle = .none
         let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
         self.likeButton.setImage(likeImage, for: .normal)
-        
+
         likeButton.addTarget(self,
                                  action: #selector(isLikeChangeFunction),
                                  for: .touchUpInside)
         
+        likeButton.accessibilityIdentifier = "LikeButton"
+
         //размещение строки с текущей датой
         let curDate: Date
         var dateToShow: String
