@@ -8,6 +8,7 @@
 import Foundation
 
 final class WebViewViewControllerSpy: WebViewControllerProtocol {
+    
     var presenter: WebViewPresenterProtocol?
     
     var loadRequestCalled: Bool = false

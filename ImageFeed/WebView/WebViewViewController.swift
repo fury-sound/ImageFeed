@@ -72,12 +72,6 @@ final class WebViewViewController: UIViewController & WebViewControllerProtocol 
         delegate.webViewViewControllerDidCancel(self)
     }
     
-    // обновление прогрессе в progressView
-//    private func updateProgress() {
-//        progressView.progress = Float(webView.estimatedProgress)
-//        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
-//    }
-    
     func setProgressValue(_ newValue: Float) {
         progressView.progress = newValue
     }
@@ -87,30 +81,8 @@ final class WebViewViewController: UIViewController & WebViewControllerProtocol 
     }
 
     
-//    func load(request: URLRequest) {
-//        webView.load(request)
-//    }
-    
     // переименован из func load(request: URLRequest)
     func loadAuthView(request: URLRequest) {
-//        guard
-//            var urlComponents = URLComponents(
-//                string: WebViewConstants.unsplashAuthorizeURLString)
-//        else {
-//            debugPrint("Error creating urlComponents from URLComponents")
-//            return
-//        }
-//        urlComponents.queryItems = [
-//            URLQueryItem(name: "client_id", value: Constants.accessKey),
-//            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-//            URLQueryItem(name: "response_type", value: "code"),
-//            URLQueryItem(name: "scope", value: Constants.accessScope),
-//        ]
-//        guard let url = urlComponents.url else {
-//            debugPrint("Error of url from urlComponents.url")
-//            return
-//        }
-//        let request = URLRequest(url: url)
         webView.load(request)
     }
 }
@@ -137,19 +109,5 @@ extension WebViewViewController: WKNavigationDelegate {
             debugPrint("No code was received: code() -> WebViewViewController")
             return nil
         }
-
-//        if let url = navigationAction.request.url,
-//           let urlComponents = URLComponents(string: url.absoluteString),
-//           urlComponents.path == "/oauth/authorize/native",
-//           let items = urlComponents.queryItems,
-//           let codeItem = items.first(where: { $0.name == "code" })
-//        {
-//            return codeItem.value
-//        } else {
-//            debugPrint("No code was received: code() -> WebViewViewController")
-//            return nil
-//        }
     }
-
-    
 }

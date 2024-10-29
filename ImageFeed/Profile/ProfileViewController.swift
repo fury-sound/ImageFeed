@@ -84,7 +84,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         arrowButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
         
-//        nameLabel.text = "Екатерина Новикова"
         nameLabel.accessibilityIdentifier = "Name Lastname"
         nameLabel.text = ""
         nameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
@@ -95,7 +94,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
         
-//        loginNameLabel.text = "@ekaterina_nov"
         loginNameLabel.accessibilityIdentifier = "@username"
         loginNameLabel.text = ""
         loginNameLabel.font = UIFont(name: "SF Pro", size: 13)
@@ -106,7 +104,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
         
-//        descriptionLabel.text = "Hello, world!"
         descriptionLabel.text = ""
         descriptionLabel.font = UIFont(name: "SF Pro", size: 13)
         descriptionLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
