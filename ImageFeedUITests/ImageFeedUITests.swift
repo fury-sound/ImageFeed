@@ -25,13 +25,13 @@ class ImageFeedUITests: XCTestCase {
         let loginTextField = webView.descendants(matching: .textField).element
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 10))
         loginTextField.tap()
-        loginTextField.typeText("valeryzv@gmail.com")
+        loginTextField.typeText("")
         XCUIApplication().toolbars.buttons["Done"].tap()
         webView.swipeUp()
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 10))
         passwordTextField.tap()
-        passwordTextField.typeText("Valery78.:!")
+        passwordTextField.typeText("")
         sleep(5)
         XCUIApplication().toolbars.buttons["Done"].tap()
         webView.swipeUp()

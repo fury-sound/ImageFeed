@@ -26,11 +26,10 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     func callFetchPhotos() {
         var testFlag = false
-        if testMode { //}&& (testFlag == false) {
+        if testMode {
             if testFlag == false {
                 imagesListService.fetchPhotosNextPage() { [weak self] handler in
                     guard let self else { return }
-                    print(self.testMode, testFlag)
                     testFlag = true
                     switch handler {
                     case .success(let photos):
@@ -47,7 +46,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         } else {
             imagesListService.fetchPhotosNextPage() { [weak self] handler in
                 guard let self else { return }
-                print(self.testMode, testFlag)
                 switch handler {
                 case .success(let photos):
                     DispatchQueue.main.async {
