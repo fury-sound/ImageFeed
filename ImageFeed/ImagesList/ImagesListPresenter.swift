@@ -18,23 +18,46 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     weak var delegate: ImagesListViewControllerProtocol?
     private(set) var photos: [Photo] = []
     private let imagesListService = ImagesListService.shared
+    let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
 
     func view(_ view: ImagesListViewControllerProtocol) {
         self.delegate = view
     }
     
     func callFetchPhotos() {
-        imagesListService.fetchPhotosNextPage() { [weak self] handler in
-            guard let self else { return }
-            switch handler {
-            case .success(let photos):
-                DispatchQueue.main.async {
-                    self.photos += photos
-                    self.delegate?.updateTableViewAnimated()
+        var testFlag = false
+        if testMode { //}&& (testFlag == false) {
+            if testFlag == false {
+                imagesListService.fetchPhotosNextPage() { [weak self] handler in
+                    guard let self else { return }
+                    print(self.testMode, testFlag)
+                    testFlag = true
+                    switch handler {
+                    case .success(let photos):
+                        DispatchQueue.main.async {
+                            self.photos += photos
+                            self.delegate?.updateTableViewAnimated()
+                        }
+                    case .failure(let error):
+                        debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
+                        return
+                    }
                 }
-            case .failure(let error):
-                debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
-                return
+            }
+        } else {
+            imagesListService.fetchPhotosNextPage() { [weak self] handler in
+                guard let self else { return }
+                print(self.testMode, testFlag)
+                switch handler {
+                case .success(let photos):
+                    DispatchQueue.main.async {
+                        self.photos += photos
+                        self.delegate?.updateTableViewAnimated()
+                    }
+                case .failure(let error):
+                    debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
+                    return
+                }
             }
         }
     }

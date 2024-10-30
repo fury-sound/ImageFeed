@@ -13,6 +13,7 @@ class ImageFeedUITests: XCTestCase {
     
     override func setUpWithError() throws {
         continueAfterFailure = false // настройка выполнения теста
+        app.launchArguments = ["testMode"]
         app.launch()
     }
     
@@ -58,6 +59,7 @@ class ImageFeedUITests: XCTestCase {
         cell.swipeUp()
         XCTAssertTrue(cell.waitForExistence(timeout: 10))
         let cellWithLike = tablesQuery.descendants(matching: .cell).element(boundBy: 1)
+        sleep(10)
         cellWithLike.buttons["LikeButton"].tap()
         sleep(10)
         cellWithLike.buttons["LikeButton"].tap()
