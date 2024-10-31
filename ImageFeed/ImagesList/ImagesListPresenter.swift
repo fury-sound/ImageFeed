@@ -10,7 +10,7 @@ import Foundation
 protocol ImagesListPresenterProtocol: AnyObject {
     var photos: [Photo] { get }
     func callFetchPhotos()
-    func updateLikeButton(indexPath: IndexPath)
+    func updateLikeButton(indexPath: IndexPath, currentCell: ImagesListCell)
     func view (_ view: ImagesListViewControllerProtocol)
 }
 
@@ -18,49 +18,28 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     weak var delegate: ImagesListViewControllerProtocol?
     private(set) var photos: [Photo] = []
     private let imagesListService = ImagesListService.shared
-    let testMode = ProcessInfo.processInfo.arguments.contains("testMode")
 
     func view(_ view: ImagesListViewControllerProtocol) {
         self.delegate = view
     }
     
     func callFetchPhotos() {
-        var testFlag = false
-        if testMode {
-            if testFlag == false {
-                imagesListService.fetchPhotosNextPage() { [weak self] handler in
-                    guard let self else { return }
-                    testFlag = true
-                    switch handler {
-                    case .success(let photos):
-                        DispatchQueue.main.async {
-                            self.photos += photos
-                            self.delegate?.updateTableViewAnimated()
-                        }
-                    case .failure(let error):
-                        debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
-                        return
-                    }
+        imagesListService.fetchPhotosNextPage() { [weak self] handler in
+            guard let self else { return }
+            switch handler {
+            case .success(let photos):
+                DispatchQueue.main.async {
+                    self.photos += photos
+                    self.delegate?.updateTableViewAnimated()
                 }
-            }
-        } else {
-            imagesListService.fetchPhotosNextPage() { [weak self] handler in
-                guard let self else { return }
-                switch handler {
-                case .success(let photos):
-                    DispatchQueue.main.async {
-                        self.photos += photos
-                        self.delegate?.updateTableViewAnimated()
-                    }
-                case .failure(let error):
-                    debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
-                    return
-                }
+            case .failure(let error):
+                debugPrint("fatch error in imagesListService.fetchPhotosNextPage call -> tableView -> ImagesListViewController: \(error.localizedDescription)")
+                return
             }
         }
     }
     
-    func updateLikeButton(indexPath: IndexPath) {
+    func updateLikeButton(indexPath: IndexPath, currentCell: ImagesListCell) {
         photos[indexPath.row].isLiked?.toggle()
         let photoId = photos[indexPath.row].id
         let imageLike = photos[indexPath.row].isLiked

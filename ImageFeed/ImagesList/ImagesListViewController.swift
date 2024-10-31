@@ -23,7 +23,7 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     private var imagesListServiceObserver: NSObjectProtocol?
     private(set) var myImageHeight: CGFloat?
     
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.accessibilityIdentifier = "ImagesListViewController"
@@ -75,7 +75,7 @@ extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let presenter else { return }
-        if indexPath.row == presenter.photos.count - 1 {
+        if indexPath.row == presenter.photos.count - 1 && !ProcessInfo.processInfo.arguments.contains("testMode") {
             presenter.callFetchPhotos()
         }
     }
@@ -123,23 +123,22 @@ extension ImagesListViewController: UITableViewDataSource {
         myImageHeight = imageCellHeight
         return imageCellHeight
     }
-//}
-
-//extension ImagesListViewController: ImageListCellDelegate {
-
+    
+    //extension ImagesListViewController: ImageListCellDelegate {
+    
     func tapLikeButton(for cell: ImagesListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             debugPrint("No indexPath in updateLikeButton -> ImagesListViewController")
             return
         }
-        presenter?.updateLikeButton(indexPath: indexPath)
+        presenter?.updateLikeButton(indexPath: indexPath, currentCell: cell)
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func showHUD() {
         UIBlockingProgressHUD.show()
     }
-
+    
     func hideHUD() {
         UIBlockingProgressHUD.dismiss()
     }

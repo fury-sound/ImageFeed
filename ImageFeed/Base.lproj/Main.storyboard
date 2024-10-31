@@ -50,12 +50,12 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TUE-60-TNu">
-                                                    <rect key="frame" x="325" y="12" width="44" height="44"/>
+                                                    <rect key="frame" x="329" y="12" width="40" height="40"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <accessibility key="accessibilityConfiguration" identifier="LikeButton"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="44" id="157-vl-ntq"/>
-                                                        <constraint firstAttribute="width" constant="44" id="3J2-ed-9m4"/>
+                                                        <constraint firstAttribute="height" constant="40" id="157-vl-ntq"/>
+                                                        <constraint firstAttribute="width" constant="40" id="3J2-ed-9m4"/>
                                                     </constraints>
                                                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>

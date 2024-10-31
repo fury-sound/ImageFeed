@@ -61,6 +61,11 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.layer.addSublayer(gradient)
     }
 
+    func setIsLiked(isLiked: Bool) {
+        let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
+        self.likeButton.setImage(likeImage, for: .normal)
+    }
+    
     func configCell(cellHeight: CGFloat, url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
         
         gradientSetup(cellHeight: cellHeight)

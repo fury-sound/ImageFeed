@@ -17,7 +17,7 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
         inCallFetchPhotos = true
     }
     
-    func updateLikeButton(indexPath: IndexPath) {
+    func updateLikeButton(indexPath: IndexPath, currentCell: ImagesListCell) {
         
     }
     

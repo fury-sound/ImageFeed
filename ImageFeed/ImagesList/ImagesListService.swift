@@ -75,7 +75,7 @@ final class ImagesListService {
         //примечание: к-во фото на страницу (per_page) проставлено как 5 - больше перезапусков приложения до исчерпания лимита подключений
         urlComponents.queryItems = [
             URLQueryItem(name: "page", value: "\(pageNumber)"),
-            URLQueryItem(name: "per_page", value: "5"),
+            URLQueryItem(name: "per_page", value: "7"),
         ]
         let urlString = Constants.baseAPIURLString + "/photos" + (urlComponents.string ?? "")
         let finalURLString = URL(string: urlString)
