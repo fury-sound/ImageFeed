@@ -7,9 +7,15 @@
 
 import UIKit
 import Kingfisher
-import SwiftKeychainWrapper
 
-final class ProfileViewController: UIViewController {
+public protocol ProfileViewControllerProtocol: AnyObject {
+    func showAlert()
+//    func removeProfileInfo()
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    
+    var presenter: ProfileViewPresenterProtocol?
     
     var delegate = SplashViewController()
     private var oauth2TokenStorage = OAuth2TokenStorage()
@@ -23,10 +29,19 @@ final class ProfileViewController: UIViewController {
     private var imageView = UIImageView()
     private var profileImageServiceObserver: NSObjectProtocol?
     
+    init(presenter: ProfileViewPresenterProtocol) {
+        super.init(nibName: nil, bundle: nil)
+        self.presenter = presenter
+        presenter.delegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkIfTokenIsRemoved()
+        presenter?.checkIfTokenIsRemoved()
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
@@ -42,16 +57,9 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateAvatar() {
-        guard
-            let profileImageURL = profileImageService.avatarURL,
-            let url = URL(string: profileImageURL)
-        else {
-            debugPrint("No url for image in profileImageURL \(String(describing: profileImageService.avatarURL))")
-            return
-        }
         let processor = RoundCornerImageProcessor(cornerRadius: 36, backgroundColor: .clear)
         imageView.kf.indicatorType = .activity
-        imageView.kf.setImage(with: url,
+        imageView.kf.setImage(with: presenter?.avatarURL(),
                               options: [
                                 .processor(processor),
                                 .cacheSerializer(FormatIndicatedCacheSerializer.png)
@@ -68,6 +76,7 @@ final class ProfileViewController: UIViewController {
         
         let arrowButton = UIButton()
         let buttonImage = UIImage(named: "Exit")
+        arrowButton.accessibilityIdentifier = "LogoutButton"
         arrowButton.setImage(buttonImage, for: .normal)
         arrowButton.addTarget(self, action: #selector(logoutAlert), for: .touchUpInside) // logout action
         view.addSubview(arrowButton)
@@ -75,7 +84,7 @@ final class ProfileViewController: UIViewController {
         arrowButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24).isActive = true
         arrowButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
         
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.accessibilityIdentifier = "Name Lastname"
         nameLabel.text = ""
         nameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         nameLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -85,7 +94,7 @@ final class ProfileViewController: UIViewController {
         nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
         
-        loginNameLabel.text = "@ekaterina_nov"
+        loginNameLabel.accessibilityIdentifier = "@username"
         loginNameLabel.text = ""
         loginNameLabel.font = UIFont(name: "SF Pro", size: 13)
         loginNameLabel.textColor = UIColor(red: 174/255.0, green: 175/255.0, blue: 180/255.0, alpha: 1.0)
@@ -95,7 +104,6 @@ final class ProfileViewController: UIViewController {
         loginNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
         
-        descriptionLabel.text = "Hello, world!"
         descriptionLabel.text = ""
         descriptionLabel.font = UIFont(name: "SF Pro", size: 13)
         descriptionLabel.textColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -107,7 +115,6 @@ final class ProfileViewController: UIViewController {
         
         guard let profile = profileService.profile else {return}
         updateProfileDetails(profile: profile)
-        
     }
     
     private func updateProfileDetails(profile: Profile) {
@@ -117,33 +124,14 @@ final class ProfileViewController: UIViewController {
         updateAvatar()
     }
     
-    // temporary function to clean all UserDefaults values
-    private func checkIfTokenIsRemoved() {
-        // checking if bearerToken was removed
-        let keyValue = "bearerToken"
-        let isSuccess: String? = KeychainWrapper.standard.string(forKey: keyValue)
-        guard isSuccess != nil else {
-            debugPrint("token value is nil: isSuccess -> ProfileViewController")
-            return
-        }
-    }
+    //    func removeProfileInfo() {
+    //        nameLabel.text = nil
+    //        loginNameLabel.text = nil
+    //        descriptionLabel.text = nil
+    //        imageView.image = nil
+    //    }
     
-    private func removeProfileInfo() {
-        nameLabel.text = ""
-        loginNameLabel.text = ""
-        descriptionLabel.text = ""
-        imageView.image = UIImage()
-    }
-    
-    private func logoutAction() {
-        oauth2TokenStorage.token = nil
-        let _: Bool = KeychainWrapper.standard.removeObject(forKey: "bearerToken")
-        ProfileLogoutService.shared.logout()
-        profileService.profileRemove()
-        profileImageService.profileImageRemove()
-        ImagesListService.shared.removeImagesList()
-        removeProfileInfo()
-//        checkIfTokenIsRem.activityoved() // calling temporary function
+    private func switchToSplash() {
         self.dismiss(animated: true)
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid windows configuration")
@@ -154,28 +142,34 @@ final class ProfileViewController: UIViewController {
         splashViewController.modalPresentationStyle = .fullScreen
         window.rootViewController = splashViewController
     }
-    
+
+    func showAlert() {
+        let alert = UIAlertController(title: "Пока, пока!",
+                                      message: "Уверены, что хотите выйти?",
+                                      preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Да",
+                                   style: .default) { [weak self] _ in
+            guard let self else { return }
+            presenter?.logoutAction()
+            switchToSplash()
+        }
+        
+        let cancel = UIAlertAction(title: "Нет",
+                                   style: .cancel) { _ in
+            alert.dismiss(animated: true)
+        }
+        alert.addAction(action)
+        action.accessibilityIdentifier = "Yes"
+        alert.addAction(cancel)
+        alert.view.accessibilityIdentifier = "Byebye!"
+        present(alert, animated: true)
+    }
     
     // logout button function
     @objc private func logoutAlert() {
-            let alert = UIAlertController(title: "Пока, пока!",
-                                          message: "Уверены, что хотите выйти?",
-                                          preferredStyle: .alert)
-            
-            let action = UIAlertAction(title: "Да",
-                                       style: .default) { [weak self] _ in
-                guard let self else { return }
-                self.logoutAction()
-            }
-            
-            let cancel = UIAlertAction(title: "Нет",
-                                       style: .cancel) { _ in
-                alert.dismiss(animated: true)
-            }
-            alert.addAction(action)
-            alert.addAction(cancel)
-            present(alert, animated: true)
-        }
-
+        presenter?.tapLogout()
+    }
+    
     
 }

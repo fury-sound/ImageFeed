@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 
 protocol ImageListCellDelegate: AnyObject {
-    func updateLikeButton(in currentCell: ImagesListCell)
+    func tapLikeButton(for cell: ImagesListCell)
 }
 
 final class ImagesListCell: UITableViewCell {
@@ -24,7 +24,7 @@ final class ImagesListCell: UITableViewCell {
     private let gradient = CAGradientLayer()
         
     @objc private func isLikeChangeFunction() {
-        delegate?.updateLikeButton(in: self)
+        delegate?.tapLikeButton(for: self)
     }
 
     private lazy var dateFormatter: DateFormatter = {
@@ -35,10 +35,10 @@ final class ImagesListCell: UITableViewCell {
         return formatter
     }()
     
-    func setIsLiked(isLiked: Bool) {
-        let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
-        self.likeButton.setImage(likeImage, for: .normal)
-    }
+//    func setIsLiked(isLiked: Bool) {
+//        let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
+//        self.likeButton.setImage(likeImage, for: .normal)
+//    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -61,6 +61,11 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.layer.addSublayer(gradient)
     }
 
+    func setIsLiked(isLiked: Bool) {
+        let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
+        self.likeButton.setImage(likeImage, for: .normal)
+    }
+    
     func configCell(cellHeight: CGFloat, url: URL, indexPath: IndexPath, isLiked: Bool, createdAt: Date?) {
         
         gradientSetup(cellHeight: cellHeight)
@@ -68,11 +73,13 @@ final class ImagesListCell: UITableViewCell {
         self.selectionStyle = .none
         let likeImage = isLiked ? UIImage.likeOn : UIImage.likeOff
         self.likeButton.setImage(likeImage, for: .normal)
-        
+
         likeButton.addTarget(self,
                                  action: #selector(isLikeChangeFunction),
                                  for: .touchUpInside)
         
+        likeButton.accessibilityIdentifier = "LikeButton"
+
         //размещение строки с текущей датой
         let curDate: Date
         var dateToShow: String
